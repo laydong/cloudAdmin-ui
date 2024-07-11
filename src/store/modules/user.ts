@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
-import { LoginUser } from '@/api/login/types'
+import { UserLoginType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { loginOutApi } from '@/api/login'
@@ -8,12 +8,13 @@ import { useTagsViewStore } from './tagsView'
 import router from '@/router'
 
 interface UserState {
-  userInfo?: LoginUser
+  userInfo?: UserLoginType
   tokenKey: string
   token: string
+  expireTime: number
   roleRouters?: string[] | AppCustomRouteRecordRaw[]
   rememberMe: boolean
-  loginInfo?: LoginUser
+  loginInfo?: UserLoginType
 }
 
 export const useUserStore = defineStore('user', {
@@ -22,6 +23,7 @@ export const useUserStore = defineStore('user', {
       userInfo: undefined,
       tokenKey: 'Authorization',
       token: '',
+      expireTime: 0,
       roleRouters: undefined,
       // 记住我
       rememberMe: true,
@@ -35,7 +37,7 @@ export const useUserStore = defineStore('user', {
     getToken(): string {
       return this.token
     },
-    getUserInfo(): LoginUser | undefined {
+    getUserInfo(): UserLoginType | undefined {
       return this.userInfo
     },
     getRoleRouters(): string[] | AppCustomRouteRecordRaw[] | undefined {
@@ -44,7 +46,7 @@ export const useUserStore = defineStore('user', {
     getRememberMe(): boolean {
       return this.rememberMe
     },
-    getLoginInfo(): LoginUser | undefined {
+    getLoginInfo(): UserLoginType | undefined {
       return this.loginInfo
     }
   },
@@ -55,7 +57,10 @@ export const useUserStore = defineStore('user', {
     setToken(token: string) {
       this.token = token
     },
-    setUserInfo(userInfo?: LoginUser) {
+    setExpireTime(expireTime: number) {
+      this.expireTime = expireTime
+    },
+    setUserInfo(userInfo?: UserLoginType) {
       this.userInfo = userInfo
     },
     setRoleRouters(roleRouters: string[] | AppCustomRouteRecordRaw[]) {
@@ -90,7 +95,7 @@ export const useUserStore = defineStore('user', {
     setRememberMe(rememberMe: boolean) {
       this.rememberMe = rememberMe
     },
-    setLoginInfo(loginInfo: LoginUser | undefined) {
+    setLoginInfo(loginInfo: UserLoginType | undefined) {
       this.loginInfo = loginInfo
     }
   },

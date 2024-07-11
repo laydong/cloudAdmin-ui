@@ -9,3 +9,8 @@ export interface LoginUser {
   captcha_id: string
   captcha: string
 }
+
+export interface LoginResponse {
+  token: string
+  expire_time: number
+}
