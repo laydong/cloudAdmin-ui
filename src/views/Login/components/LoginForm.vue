@@ -9,7 +9,7 @@ import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { UserType } from '@/api/login/types'
+import { LoginUser } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
@@ -17,7 +17,7 @@ import { BaseButton } from '@/components/Button'
 
 const { required } = useValidator()
 
-const emit = defineEmits(['to-register'])
+// const emit = defineEmits(['to-register'])
 
 const appStore = useAppStore()
 
@@ -51,19 +51,19 @@ const schema = reactive<FormSchema[]>([
   {
     field: 'username',
     label: t('login.username'),
-    // value: 'admin',
+    value: '18000521880',
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: 'admin or test'
+      placeholder: '18000521880'
     }
   },
   {
     field: 'password',
     label: t('login.password'),
-    // value: 'admin',
+    value: '123456',
     component: 'InputPassword',
     colProps: {
       span: 24
@@ -72,7 +72,37 @@ const schema = reactive<FormSchema[]>([
       style: {
         width: '100%'
       },
-      placeholder: 'admin or test'
+      placeholder: '123456'
+    }
+  },
+  {
+    field: 'captcha',
+    label: t('login.captcha'),
+    value: '123456',
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      style: {
+        width: '50%'
+      },
+      placeholder: '123456'
+    }
+  },
+  {
+    field: 'captcha_id',
+    label: t('login.captcha'),
+    value: '123456',
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      style: {
+        width: '50%'
+      },
+      placeholder: '123456'
     }
   },
   {
@@ -115,11 +145,6 @@ const schema = reactive<FormSchema[]>([
                   onClick={signIn}
                 >
                   {t('login.login')}
-                </BaseButton>
-              </div>
-              <div class="w-[100%] mt-15px">
-                <BaseButton class="w-[100%]" onClick={toRegister}>
-                  {t('login.register')}
                 </BaseButton>
               </div>
             </>
@@ -226,18 +251,18 @@ const signIn = async () => {
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       loading.value = true
-      const formData = await getFormData<UserType>()
-
+      const formData = await getFormData<LoginUser>()
+      console.log(formData)
       try {
         const res = await loginApi(formData)
 
         if (res) {
           // 是否记住我
           if (unref(remember)) {
-            userStore.setLoginInfo({
-              username: formData.username,
-              password: formData.password
-            })
+            // userStore.setLoginInfo({
+            //   username: formData.username,
+            //   password: formData.password
+            // })
           } else {
             userStore.setLoginInfo(undefined)
           }
@@ -264,7 +289,7 @@ const signIn = async () => {
 
 // 获取角色信息
 const getRole = async () => {
-  const formData = await getFormData<UserType>()
+  const formData = await getFormData<LoginUser>()
   const params = {
     roleName: formData.username
   }
@@ -288,9 +313,9 @@ const getRole = async () => {
 }
 
 // 去注册页面
-const toRegister = () => {
-  emit('to-register')
-}
+// const toRegister = () => {
+//   emit('to-register')
+// }
 </script>
 
 <template>

@@ -3,9 +3,9 @@ export interface UserLoginType {
   password: string
 }
 
-export interface UserType {
+export interface LoginUser {
   username: string
   password: string
-  role: string
-  roleId: string
+  captcha_id: string
+  captcha: string
 }

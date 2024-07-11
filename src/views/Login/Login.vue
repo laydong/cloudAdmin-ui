@@ -24,7 +24,7 @@ const toRegister = () => {
 }
 
 const toLogin = () => {
-  isLogin.value = true
+  isLogin.value = false
 }
 
 const themeChange = () => {
