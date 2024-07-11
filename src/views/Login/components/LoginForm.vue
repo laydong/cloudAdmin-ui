@@ -289,7 +289,7 @@ const signIn = async () => {
 }
 
 
-// 获取角色信息
+// 获取账号信息
 const getUserInfo = async () => {
   const res = await getAdminApi()
   if (res) {

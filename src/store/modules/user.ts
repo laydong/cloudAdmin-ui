@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { store } from '../index'
+import { store } from '@/store'
 import { UserLoginType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'

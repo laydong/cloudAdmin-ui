@@ -14,3 +14,10 @@ export interface LoginResponse {
   token: string
   expire_time: number
 }
+
+export interface UserResponse {
+  id: number
+  user_name: string
+  nickname: string
+  avatar: string
+}
