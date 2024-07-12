@@ -34,9 +34,9 @@ const lockScreen = () => {
   dialogVisible.value = true
 }
 
-const toDocument = () => {
-  window.open('https://element-plus-admin-doc.cn/')
-}
+// const toDocument = () => {
+//   window.open('https://element-plus-admin-doc.cn/')
+// }
 
 const toPage = (path: string) => {
   push(path)
@@ -61,9 +61,6 @@ const toPage = (path: string) => {
           <div @click="toPage('/personal/personal-center')">
             {{ t('router.personalCenter') }}
           </div>
-        </ElDropdownItem>
-        <ElDropdownItem>
-          <div @click="toDocument">{{ t('common.document') }}</div>
         </ElDropdownItem>
         <ElDropdownItem divided>
           <div @click="lockScreen">{{ t('lock.lockScreen') }}</div>

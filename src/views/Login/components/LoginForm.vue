@@ -4,7 +4,8 @@ import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import {loginApi, getAdminApi} from '@/api/login'
+import { loginApi } from '@/api/login'
+import { getAdminApi } from '@/api/user'
 // import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
@@ -260,7 +261,7 @@ const signIn = async () => {
           if (unref(remember)) {
             userStore.setLoginInfo({
               username: formData.username,
-              password: formData.password,
+              password: formData.password
             })
           } else {
             userStore.setLoginInfo(undefined)
@@ -268,17 +269,21 @@ const signIn = async () => {
           userStore.setRememberMe(unref(remember))
           userStore.setToken(res.data.token)
           userStore.setExpireTime(res.data.expire_time)
-          getUserInfo()
+          await getUserInfo()
+
+          await permissionStore.generateRoutes('static').catch(() => {})
+          console.log(permissionStore)
+          permissionStore.getAddRouters.forEach((route) => {
+            addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
+          })
+          permissionStore.setIsAddRouters(true)
+          push({ path: redirect.value || permissionStore.addRouters[0].path })
+
           // 是否使用动态路由
           // if (appStore.getDynamicRouter) {
-          //   getRole()
+          //   await getRole()
           // } else {
-            await permissionStore.generateRoutes('static').catch(() => {})
-            permissionStore.getAddRouters.forEach((route) => {
-              addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-            })
-            permissionStore.setIsAddRouters(true)
-            push({ path: redirect.value || permissionStore.addRouters[0].path })
+
           // }
         }
       } finally {
@@ -288,20 +293,20 @@ const signIn = async () => {
   })
 }
 
-
-// 获取账号信息
 const getUserInfo = async () => {
   const res = await getAdminApi()
   if (res) {
+    userStore.setUserInfo(res)
+    console.log(userStore.getUserInfo())
     console.log(res)
   }
 }
 
 // 获取角色信息
 // const getRole = async () => {
-//   const formData = await getFormData<LoginUser>()
+//   // const formData = await getFormData<LoginUser>()
 //   const params = {
-//     roleName: formData.username
+//     roleName: 'admin'
 //   }
 //   const res =
 //     appStore.getDynamicRouter && appStore.getServerDynamicRouter

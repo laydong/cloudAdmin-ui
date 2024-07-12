@@ -1,5 +1,5 @@
 import router from './router'
-import { useAppStoreWithOut } from '@/store/modules/app'
+// import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router'
 import { useTitle } from '@/hooks/web/useTitle'
 import { useNProgress } from '@/hooks/web/useNProgress'
@@ -16,9 +16,9 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
   const permissionStore = usePermissionStoreWithOut()
-  const appStore = useAppStoreWithOut()
+  // const appStore = useAppStoreWithOut()
   const userStore = useUserStoreWithOut()
-  if (userStore.getUserInfo) {
+  if (userStore.getToken) {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
@@ -28,16 +28,17 @@ router.beforeEach(async (to, from, next) => {
       }
 
       // 开发者可根据实际情况进行修改
-      const roleRouters = userStore.getRoleRouters || []
+      // const roleRouters = userStore.getRoleRouters || []
 
+      await permissionStore.generateRoutes('static')
       // 是否使用动态路由
-      if (appStore.getDynamicRouter) {
-        appStore.serverDynamicRouter
-          ? await permissionStore.generateRoutes('server', roleRouters as AppCustomRouteRecordRaw[])
-          : await permissionStore.generateRoutes('frontEnd', roleRouters as string[])
-      } else {
-        await permissionStore.generateRoutes('static')
-      }
+      // if (appStore.getDynamicRouter) {
+      //   appStore.serverDynamicRouter
+      //     ? await permissionStore.generateRoutes('server', roleRouters as AppCustomRouteRecordRaw[])
+      //     : await permissionStore.generateRoutes('frontEnd', roleRouters as string[])
+      // } else {
+      //   await permissionStore.generateRoutes('static')
+      // }
 
       permissionStore.getAddRouters.forEach((route) => {
         router.addRoute(route as unknown as RouteRecordRaw) // 动态添加可访问路由表

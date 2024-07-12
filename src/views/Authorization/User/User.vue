@@ -222,7 +222,7 @@ watch(
 
 const currentChange = (data: DepartmentItem) => {
   // if (data.children) return
-  currentNodeKey.value = data.id
+  // currentNodeKey.value = data.id
   currentPage.value = 1
   getList()
 }

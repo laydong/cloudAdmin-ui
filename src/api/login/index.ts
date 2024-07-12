@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { LoginUser, LoginResponse, UserResponse } from './types'
+import type { LoginUser, LoginResponse } from './types'
 
 interface RoleParams {
   roleName: string
@@ -8,9 +8,7 @@ interface RoleParams {
 export const loginApi = (data: LoginUser): Promise<IResponse<LoginResponse>> => {
   return request.post({ url: '/login', data })
 }
-export const getAdminApi = (): Promise<IResponse<UserResponse>> => {
-  return request.get({ url: '/user/info' })
-}
+
 export const loginOutApi = (): Promise<IResponse> => {
   return request.get({ url: '/loginOut' })
 }

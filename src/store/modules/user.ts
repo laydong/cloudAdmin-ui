@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store'
 import { UserLoginType } from '@/api/login/types'
+import { UserType } from '@/api/user/types'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { loginOutApi } from '@/api/login'
@@ -8,7 +9,7 @@ import { useTagsViewStore } from './tagsView'
 import router from '@/router'
 
 interface UserState {
-  userInfo?: UserLoginType
+  userInfo?: UserType
   tokenKey: string
   token: string
   expireTime: number
@@ -37,7 +38,7 @@ export const useUserStore = defineStore('user', {
     getToken(): string {
       return this.token
     },
-    getUserInfo(): UserLoginType | undefined {
+    getUserInfo(): UserType | undefined {
       return this.userInfo
     },
     getRoleRouters(): string[] | AppCustomRouteRecordRaw[] | undefined {
@@ -60,7 +61,7 @@ export const useUserStore = defineStore('user', {
     setExpireTime(expireTime: number) {
       this.expireTime = expireTime
     },
-    setUserInfo(userInfo?: UserLoginType) {
+    setUserInfo(userInfo?: UserType) {
       this.userInfo = userInfo
     },
     setRoleRouters(roleRouters: string[] | AppCustomRouteRecordRaw[]) {

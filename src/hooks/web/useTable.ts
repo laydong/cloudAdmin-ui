@@ -2,6 +2,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableExpose, TableProps, TableSetProps, TableColumn } from '@/components/Table'
 import { ElTable, ElMessageBox, ElMessage } from 'element-plus'
 import { ref, watch, unref, nextTick, onMounted } from 'vue'
+import { getAdminListApi } from '@/api/user'
 
 const { t } = useI18n()
 
@@ -79,11 +80,12 @@ export const useTable = (config: UseTableConfig) => {
     getList: async () => {
       loading.value = true
       try {
-        const res = await config?.fetchDataApi()
+        const res = await getAdminListApi()
+        // const res = await config?.fetchDataApi()
         console.log('fetchDataApi res', res)
         if (res) {
-          dataList.value = res.list
-          total.value = res.total || 0
+          dataList.value = res.data
+          // total.value = res.total || 0
         }
       } catch (err) {
         console.log('fetchDataApi error')
