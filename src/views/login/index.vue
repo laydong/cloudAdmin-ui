@@ -1,341 +1,250 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
-
-      <div class="title-container">
-        <h3 class="title">
-          {{ $t('login.title') }}
-        </h3>
-        <lang-select class="set-language" />
-      </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          :placeholder="$t('login.username')"
-          name="username"
-          type="text"
-          tabindex="1"
-          autocomplete="on"
-        />
-      </el-form-item>
-
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            :placeholder="$t('login.password')"
-            name="password"
-            tabindex="2"
-            autocomplete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
-      </el-tooltip>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
-        {{ $t('login.logIn') }}
-      </el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.username') }} : admin</span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">
-            {{ $t('login.username') }} : editor
-          </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          {{ $t('login.thirdparty') }}
-        </el-button>
-      </div>
-    </el-form>
-
-    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
-  </div>
+	<div class="login-container flex">
+		<div class="login-left">
+			<div class="login-left-logo">
+				<img :src="logoMini" />
+				<div class="login-left-logo-text">
+					<span>{{ getThemeConfig.globalViceTitle }}</span>
+					<span class="login-left-logo-text-msg">{{ getThemeConfig.globalViceTitleMsg }}</span>
+				</div>
+			</div>
+			<div class="login-left-img">
+				<img :src="loginMain" />
+			</div>
+			<img :src="loginBg" class="login-left-waves" />
+		</div>
+		<div class="login-right flex">
+			<div class="login-right-warp flex-margin">
+				<span class="login-right-warp-one"></span>
+				<span class="login-right-warp-two"></span>
+				<div class="login-right-warp-mian">
+					<div class="login-right-warp-main-title">{{ getThemeConfig.globalTitle }} 欢迎您！</div>
+					<div class="login-right-warp-main-form">
+						<div v-if="!state.isScan">
+							<el-tabs v-model="state.tabsActiveName">
+								<el-tab-pane :label="$t('message.label.one1')" name="account">
+									<Account />
+								</el-tab-pane>
+<!--								<el-tab-pane :label="$t('message.label.two2')" name="mobile">-->
+<!--									<Mobile />-->
+<!--								</el-tab-pane>-->
+							</el-tabs>
+						</div>
+						<Scan v-if="state.isScan" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
-<script>
-import { validUsername } from '@/utils/validate'
-import LangSelect from '@/components/LangSelect'
-import SocialSign from './components/SocialSignin'
+<script setup lang="ts" name="loginIndex">
+import { defineAsyncComponent, onMounted, reactive, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
+import { NextLoading } from '/@/utils/loading';
+import logoMini from '/@/assets/logo-mini.svg';
+import loginMain from '/@/assets/login-main.svg';
+import loginBg from '/@/assets/login-bg.svg';
 
-export default {
-  name: 'Login',
-  components: { LangSelect, SocialSign },
-  data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
-    return {
-      loginForm: {
-        username: 'admin',
-        password: '111111'
-      },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      },
-      passwordType: 'password',
-      capsTooltip: false,
-      loading: false,
-      showDialog: false,
-      redirect: undefined,
-      otherQuery: {}
-    }
-  },
-  watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query
-        if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
-        }
-      },
-      immediate: true
-    }
-  },
-  created() {
-    // window.addEventListener('storage', this.afterQRScan)
-  },
-  mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    }
-  },
-  destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
-  },
-  methods: {
-    checkCapslock(e) {
-      const { key } = e
-      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
-    },
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
-    },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    getOtherQuery(query) {
-      return Object.keys(query).reduce((acc, cur) => {
-        if (cur !== 'redirect') {
-          acc[cur] = query[cur]
-        }
-        return acc
-      }, {})
-    }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
-  }
-}
+// 引入组件
+const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
+// const Mobile = defineAsyncComponent(() => import('/@/views/login/component/mobile.vue'));
+const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
+
+// 定义变量内容
+const storesThemeConfig = useThemeConfig();
+const { themeConfig } = storeToRefs(storesThemeConfig);
+const state = reactive({
+	tabsActiveName: 'account',
+	isScan: false,
+});
+
+// 获取布局配置信息
+const getThemeConfig = computed(() => {
+	return themeConfig.value;
+});
+// 页面加载时
+onMounted(() => {
+	NextLoading.done();
+});
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
-
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
-}
-
-/* reset element-ui css */
+<style scoped lang="scss">
 .login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      caret-color: $cursor;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
-      }
-    }
-  }
-
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
-}
-</style>
-
-<style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
-
-.login-container {
-  min-height: 100%;
-  width: 100%;
-  background-color: $bg;
-  overflow: hidden;
-
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
-  }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
-    }
-  }
-
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .set-language {
-      color: #fff;
-      position: absolute;
-      top: 3px;
-      font-size: 18px;
-      right: 0px;
-      cursor: pointer;
-    }
-  }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .thirdparty-button {
-    position: absolute;
-    right: 0;
-    bottom: 6px;
-  }
-
-  @media only screen and (max-width: 470px) {
-    .thirdparty-button {
-      display: none;
-    }
-  }
+	height: 100%;
+	background: var(--el-color-white);
+	.login-left {
+		flex: 1;
+		position: relative;
+		background-color: rgba(211, 239, 255, 1);
+		margin-right: 100px;
+		.login-left-logo {
+			display: flex;
+			align-items: center;
+			position: absolute;
+			top: 50px;
+			left: 80px;
+			z-index: 1;
+			animation: logoAnimation 0.3s ease;
+			img {
+				width: 52px;
+				height: 52px;
+			}
+			.login-left-logo-text {
+				display: flex;
+				flex-direction: column;
+				span {
+					margin-left: 10px;
+					font-size: 28px;
+					color: #26a59a;
+				}
+				.login-left-logo-text-msg {
+					font-size: 12px;
+					color: #32a99e;
+				}
+			}
+		}
+		.login-left-img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			height: 52%;
+			img {
+				width: 100%;
+				height: 100%;
+				animation: error-num 0.6s ease;
+			}
+		}
+		.login-left-waves {
+			position: absolute;
+			top: 0;
+			right: -100px;
+		}
+	}
+	.login-right {
+		width: 700px;
+		.login-right-warp {
+			border: 1px solid var(--el-color-primary-light-3);
+			border-radius: 3px;
+			width: 500px;
+			height: 500px;
+			position: relative;
+			overflow: hidden;
+			background-color: var(--el-color-white);
+			.login-right-warp-one,
+			.login-right-warp-two {
+				position: absolute;
+				display: block;
+				width: inherit;
+				height: inherit;
+				&::before,
+				&::after {
+					content: '';
+					position: absolute;
+					z-index: 1;
+				}
+			}
+			.login-right-warp-one {
+				&::before {
+					filter: hue-rotate(0deg);
+					top: 0px;
+					left: 0;
+					width: 100%;
+					height: 3px;
+					background: linear-gradient(90deg, transparent, var(--el-color-primary));
+					animation: loginLeft 3s linear infinite;
+				}
+				&::after {
+					filter: hue-rotate(60deg);
+					top: -100%;
+					right: 2px;
+					width: 3px;
+					height: 100%;
+					background: linear-gradient(180deg, transparent, var(--el-color-primary));
+					animation: loginTop 3s linear infinite;
+					animation-delay: 0.7s;
+				}
+			}
+			.login-right-warp-two {
+				&::before {
+					filter: hue-rotate(120deg);
+					bottom: 2px;
+					right: -100%;
+					width: 100%;
+					height: 3px;
+					background: linear-gradient(270deg, transparent, var(--el-color-primary));
+					animation: loginRight 3s linear infinite;
+					animation-delay: 1.4s;
+				}
+				&::after {
+					filter: hue-rotate(300deg);
+					bottom: -100%;
+					left: 0px;
+					width: 3px;
+					height: 100%;
+					background: linear-gradient(360deg, transparent, var(--el-color-primary));
+					animation: loginBottom 3s linear infinite;
+					animation-delay: 2.1s;
+				}
+			}
+			.login-right-warp-mian {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				.login-right-warp-main-title {
+					height: 130px;
+					line-height: 130px;
+					font-size: 27px;
+					text-align: center;
+					letter-spacing: 3px;
+					animation: logoAnimation 0.3s ease;
+					animation-delay: 0.3s;
+					color: var(--el-text-color-primary);
+				}
+				.login-right-warp-main-form {
+					flex: 1;
+					padding: 0 50px 50px;
+					.login-content-main-sacn {
+						position: absolute;
+						top: 0;
+						right: 0;
+						width: 50px;
+						height: 50px;
+						overflow: hidden;
+						cursor: pointer;
+						transition: all ease 0.3s;
+						color: var(--el-color-primary);
+						&-delta {
+							position: absolute;
+							width: 35px;
+							height: 70px;
+							z-index: 2;
+							top: 2px;
+							right: 21px;
+							background: var(--el-color-white);
+							transform: rotate(-45deg);
+						}
+						&:hover {
+							opacity: 1;
+							transition: all ease 0.3s;
+							color: var(--el-color-primary) !important;
+						}
+						i {
+							width: 47px;
+							height: 50px;
+							display: inline-block;
+							font-size: 48px;
+							position: absolute;
+							right: 1px;
+							top: 0px;
+						}
+					}
+				}
+			}
+		}
+	}
 }
 </style>

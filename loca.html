@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Client</title>
+</head>
+<body>
+<script>
+    const url = "?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjA2MDY4NzksInVpZCI6MTEwMDE0fQ.Xv0__eJR-TpN5aW8NuDWzlXE3bzzBW5i58LbUmSjAvc";
+    const socket = new WebSocket('ws://49.235.129.65:6198/ws/business_msg'+url);
+    socket.onopen = function(event) {
+        console.log('Connected to WebSocket server.');
+        // var data = {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjAwODIyMjksInVpZCI6MTEwMDAxfQ.ITfFLcVrViMVFUW7_EfqJGI64V-JcTSYsRnRCBJbmPo"}
+        // socket.send("ping");
+        console.log(event)
+    };
+
+    socket.onmessage = function(event) {
+        console.log('Received from server: ' + event.data);
+        if (event.data ==="ping"){
+            socket.send('pong');
+        }
+    };
+
+    socket.onclose = function(event) {
+        console.log('Disconnected from WebSocket server.');
+    };
+
+    socket.onerror = function(error) {
+        console.log('WebSocket error: ' + error);
+    };
+
+    // Send a ping message every 50 seconds
+    // 发送 ping 消息并处理 pong 响应
+    setInterval(function() {
+        console.log('Sending ping to server');
+        socket.send('ping');
+    }, 29000);
+</script>
+</body>
+</html>

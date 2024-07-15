@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 50" width="64" height="50">
+	<defs>
+		<image width="64" height="50" id="img1" href="https://www.scxy88.cn/uploads/image/20210113/3edcd39720898475ac682906cfce90ba.png"/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="Background" href="#img1" x="0" y="0" />
+</svg>
