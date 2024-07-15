@@ -3,27 +3,27 @@ export function useAdminApi() {
 	return {
 		getAdminList: (params?: object) => {
 			return request({
-				url: '/admin/list',
+				url: '/name/list',
 				method: 'get',
 				params,
 			});
 		},
 		getAdminInfo: () => {
 			return request({
-				url: '/admin/info',
+				url: '/name/info',
 				method: 'get',
 			});
 		},
 		getAdminUser: (params?:object) => {
 			return request({
-				url: '/admin/user',
+				url: '/name/user',
 				method: 'get',
 				params
 			});
 		},
 		AdminStatus: (data?: object) => {
 			return request({
-				url: '/admin/status',
+				url: '/name/status',
 				method: 'post',
 				data:data,
 			});
@@ -37,7 +37,7 @@ export function useAdminApi() {
 		},
 		AdminCreate: (data?: object) => {
 			return request({
-				url: '/admin/create',
+				url: '/name/create',
 				method: 'post',
 				data:data,
 			});

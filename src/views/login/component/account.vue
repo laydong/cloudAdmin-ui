@@ -38,13 +38,13 @@
 					autocomplete="off"
 				>
 					<template #prefix>
-						<el-icon class="el-input__icon"><ele-Position /></el-icon>
+						<el-image class="el-input__icon"><ele-Position /></el-image>
 					</template>
 				</el-input>
 			</el-col>
 			<el-col :span="1"></el-col>
 			<el-col :span="8">
-				<el-button class="login-content-code" v-waves>1234</el-button>
+        <el-image class="login-content-code" style="width: 100%;height: 20%;"  :src="state.ruleForm.image"></el-image>
 			</el-col>
 		</el-form-item>
 		<el-form-item class="login-animation4">
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts" name="loginAccount">
-import { reactive, computed } from 'vue';
+import { reactive, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
@@ -65,6 +65,7 @@ import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
 import {useLoginApi} from "/@/api/login";
+import {useUserApi} from "/@/api/user";
 
 // 定义变量内容
 const { t } = useI18n();
@@ -77,7 +78,7 @@ const state = reactive({
 		password: '123456',
     captcha_id: '12345648',
     captcha: '123456',
-    image: ''
+    image: 'https://www.scxy88.cn/uploads/image/20210113/f605a9b88cf971df84e9e91a739b3c17.png'
 	},
 	loading: {
 		signIn: false,
@@ -119,27 +120,9 @@ const onSignIn = async () => {
   }).catch(()=>{
     ElMessage.error(`登录失败`);
     // 添加 loading，防止第一次进入界面时出现短暂空白
-    // NextLoading.start();
+    NextLoading.start();
     state.loading.signIn = false;
   })
-
-
-
-	// 存储 token 到浏览器缓存
-	// Session.set('token', Math.random().toString(36).substr(0));
-	// // 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
-	// Cookies.set('userName', state.ruleForm.userName);
-	// if (!themeConfig.value.isRequestRoutes) {
-	// 	// 前端控制路由，2、请注意执行顺序
-	// 	const isNoPower = await initFrontEndControlRoutes();
-	// 	signInSuccess(isNoPower);
-	// } else {
-	// 	// 模拟后端控制路由，isRequestRoutes 为 true，则开启后端控制路由
-	// 	// 添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
-	// 	const isNoPower = await initBackEndControlRoutes();
-	// 	// 执行完 initBackEndControlRoutes，再执行 signInSuccess
-	// 	signInSuccess(isNoPower);
-	// }
 };
 // 登录成功后的跳转
 const signInSuccess = (isNoPower: boolean | undefined) => {
@@ -167,6 +150,11 @@ const signInSuccess = (isNoPower: boolean | undefined) => {
 	}
 	state.loading.signIn = false;
 };
+
+// 页面加载时
+onMounted(() => {
+  getCaptcha();
+});
 </script>
 
 <style scoped lang="scss">

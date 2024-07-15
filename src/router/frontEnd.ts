@@ -117,14 +117,14 @@ export function setFilterMenuAndCacheTagsViewRoutes() {
 	const storesRoutesList = useRoutesList(pinia);
 	const { userInfos } = storeToRefs(stores);
 	let roleID = 1;
-	if (userInfos.value.role_info.length > 0){
-		userInfos.value.role_info.forEach((item: any) => {
-			if (item.id == 1){
-				roleID= 1
-			}
-		})
-		return
-	}
+	// if (userInfos.value.role_info.length > 0){
+	// 	userInfos.value.role_info.forEach((item: any) => {
+	// 		if (item.id == 1){
+	// 			roleID= 1
+	// 		}
+	// 	})
+	// 	return
+	// }
 	storesRoutesList.setRoutesList(setFilterHasRolesMenu(dynamicRoutes[0].children,roleID, userInfos.value.menu_info));
 	storesRoutesList.setRoutesAll(setFilterHasRolesMenu(dynamicRoutes[0].children,roleID, userInfos.value.menu_info));
 	setCacheTagsViewRoutes();
