@@ -1,34 +1,27 @@
-import request from '@/axios'
-import type { LoginUser, LoginResponse } from './types'
+import request from '/src/utils/request';
 
-interface RoleParams {
-  roleName: string
-}
-
-export const loginApi = (data: LoginUser): Promise<IResponse<LoginResponse>> => {
-  return request.post({ url: '/login', data })
-}
-
-export const loginOutApi = (): Promise<IResponse> => {
-  return request.get({ url: '/loginOut' })
-}
-
-export const getUserListApi = ({ params }: AxiosConfig) => {
-  return request.get<{
-    code: string
-    data: {
-      list: LoginUser[]
-      total: number
-    }
-  }>({ url: '/mock/user/list', params })
-}
-
-export const getAdminRoleApi = (
-  params: RoleParams
-): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
-  return request.get({ url: '/mock/role/list', params })
-}
-
-export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
-  return request.get({ url: '/mock/role/list2', params })
+/**
+ * （不建议写成 request.post(xxx)，因为这样 post 时，无法 params 与 data 同时传参）
+ *
+ * 登录api接口集合
+ * @method signIn 用户登录
+ * @method signOut 用户退出登录
+ */
+export function useLoginApi() {
+	return {
+		signIn: (data: object) => {
+			return request({
+				url: '/login',
+				method: 'post',
+				data: data,
+			});
+		},
+		signOut: (data: object) => {
+			return request({
+				url: '/user/signOut',
+				method: 'post',
+				data,
+			});
+		},
+	};
 }

@@ -1,58 +1,19 @@
-import 'vue/jsx'
+import { createApp } from 'vue';
+import pinia from '/src/stores';
+import App from './App.vue';
+import router from './router';
+import { directive } from '/src/directive';
+import { i18n } from '/src/i18n';
+import other from '/src/utils/other';
 
-// 引入windi css
-import '@/plugins/unocss'
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import '/src/theme/index.scss';
+import VueGridLayout from 'vue-grid-layout';
 
-// 导入全局的svg图标
-import '@/plugins/svgIcon'
+const app = createApp(App);
 
-// 初始化多语言
-import { setupI18n } from '@/plugins/vueI18n'
+directive(app);
+other.elSvg(app);
 
-// 引入状态管理
-import { setupStore } from '@/store'
-
-// 全局组件
-import { setupGlobCom } from '@/components'
-
-// 引入element-plus
-import { setupElementPlus } from '@/plugins/elementPlus'
-
-// 引入全局样式
-import '@/styles/index.less'
-
-// 引入动画
-import '@/plugins/animate.css'
-
-// 路由
-import { setupRouter } from './router'
-
-// 权限
-import { setupPermission } from './directives'
-
-import { createApp } from 'vue'
-
-import App from './App.vue'
-
-import './permission'
-
-// 创建实例
-const setupAll = async () => {
-  const app = createApp(App)
-
-  await setupI18n(app)
-
-  setupStore(app)
-
-  setupGlobCom(app)
-
-  setupElementPlus(app)
-
-  setupRouter(app)
-
-  setupPermission(app)
-
-  app.mount('#app')
-}
-
-setupAll()
+app.use(pinia).use(router).use(ElementPlus, { i18n: i18n.global.t }).use(i18n).use(VueGridLayout).mount('#app');

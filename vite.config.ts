@@ -1,179 +1,66 @@
-import { resolve } from 'path'
-import { loadEnv } from 'vite'
-import type { UserConfig, ConfigEnv } from 'vite'
-import Vue from '@vitejs/plugin-vue'
-import VueJsx from '@vitejs/plugin-vue-jsx'
-import progress from 'vite-plugin-progress'
-import EslintPlugin from 'vite-plugin-eslint'
-import { ViteEjsPlugin } from 'vite-plugin-ejs'
-import { viteMockServe } from 'vite-plugin-mock'
-import PurgeIcons from 'vite-plugin-purge-icons'
-import ServerUrlCopy from 'vite-plugin-url-copy'
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
-import UnoCSS from 'unocss/vite'
-import { visualizer } from 'rollup-plugin-visualizer'
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
+import { defineConfig, loadEnv, ConfigEnv } from 'vite';
+import vueSetupExtend from 'vite-plugin-vue-setup-extend';
 
-// https://vitejs.dev/config/
-const root = process.cwd()
+const pathResolve = (dir: string) => {
+	return resolve(__dirname, '.', dir);
+};
 
-function pathResolve(dir: string) {
-  return resolve(root, '.', dir)
-}
+const alias: Record<string, string> = {
+	'/@': pathResolve('./src/'),
+	'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
+};
 
-export default ({ command, mode }: ConfigEnv): UserConfig => {
-  let env = {} as any
-  const isBuild = command === 'build'
-  if (!isBuild) {
-    env = loadEnv(process.argv[3] === '--mode' ? process.argv[4] : process.argv[3], root)
-  } else {
-    env = loadEnv(mode, root)
-  }
-  return {
-    base: env.VITE_BASE_PATH,
-    plugins: [
-      Vue({
-        script: {
-          // 开启defineModel
-          defineModel: true
-        }
-      }),
-      VueJsx(),
-      ServerUrlCopy(),
-      progress(),
-      env.VITE_USE_ALL_ELEMENT_PLUS_STYLE === 'false'
-        ? createStyleImportPlugin({
-            resolves: [ElementPlusResolve()],
-            libs: [
-              {
-                libraryName: 'element-plus',
-                esModule: true,
-                resolveStyle: (name) => {
-                  if (name === 'click-outside') {
-                    return ''
-                  }
-                  return `element-plus/es/components/${name.replace(/^el-/, '')}/style/css`
-                }
-              }
-            ]
-          })
-        : undefined,
-      EslintPlugin({
-        cache: false,
-        include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // 检查的文件
-      }),
-      VueI18nPlugin({
-        runtimeOnly: true,
-        compositionOnly: true,
-        include: [resolve(__dirname, 'src/locales/**')]
-      }),
-      createSvgIconsPlugin({
-        iconDirs: [pathResolve('src/assets/svgs')],
-        symbolId: 'icon-[dir]-[name]',
-        svgoOptions: true
-      }),
-      PurgeIcons(),
-      env.VITE_USE_MOCK === 'true'
-        ? viteMockServe({
-            ignore: /^\_/,
-            mockPath: 'mock',
-            localEnabled: !isBuild,
-            prodEnabled: isBuild,
-            injectCode: `
-          import { setupProdMockServer } from '../mock/_createProductionServer'
+const viteConfig = defineConfig((mode: ConfigEnv) => {
+	const env = loadEnv(mode.mode, process.cwd());
+	return {
+		plugins: [vue(), vueSetupExtend()],
+		root: process.cwd(),
+		resolve: { alias },
+		base: mode.command === 'serve' ? './' : env.VITE_PUBLIC_PATH,
+		optimizeDeps: {
+			include: ['element-plus/lib/locale/lang/zh-cn', 'element-plus/lib/locale/lang/en', 'element-plus/lib/locale/lang/zh-tw'],
+		},
+		server: {
+			host: '0.0.0.0',
+			port: env.VITE_PORT as unknown as number,
+			open: JSON.parse(env.VITE_OPEN),
+			hmr: true,
+			proxy: {
+				'/gitee': {
+					target: 'https://gitee.com',
+					ws: true,
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/gitee/, ''),
+				},
+			},
+		},
+		build: {
+			outDir: 'dist',
+			chunkSizeWarningLimit: 1500,
+			rollupOptions: {
+				output: {
+					entryFileNames: `assets/[name].[hash].js`,
+					chunkFileNames: `assets/[name].[hash].js`,
+					assetFileNames: `assets/[name].[hash].[ext]`,
+					compact: true,
+					manualChunks: {
+						vue: ['vue', 'vue-router', 'pinia'],
+						echarts: ['echarts'],
+					},
+				},
+			},
+		},
+		css: { preprocessorOptions: { css: { charset: false } } },
+		define: {
+			__VUE_I18N_LEGACY_API__: JSON.stringify(false),
+			__VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
+			__INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
+			__NEXT_VERSION__: JSON.stringify(process.env.npm_package_version),
+			__NEXT_NAME__: JSON.stringify(process.env.npm_package_name),
+		},
+	};
+});
 
-          setupProdMockServer()
-          `
-          })
-        : undefined,
-      ViteEjsPlugin({
-        title: env.VITE_APP_TITLE
-      }),
-      UnoCSS()
-    ],
-
-    css: {
-      preprocessorOptions: {
-        less: {
-          additionalData: '@import "./src/styles/variables.module.less";',
-          javascriptEnabled: true
-        }
-      }
-    },
-    resolve: {
-      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
-      alias: [
-        {
-          find: 'vue-i18n',
-          replacement: 'vue-i18n/dist/vue-i18n.cjs.js'
-        },
-        {
-          find: /\@\//,
-          replacement: `${pathResolve('src')}/`
-        }
-      ]
-    },
-    esbuild: {
-      pure: env.VITE_DROP_CONSOLE === 'true' ? ['console.log'] : undefined,
-      drop: env.VITE_DROP_DEBUGGER === 'true' ? ['debugger'] : undefined
-    },
-    build: {
-      target: 'es2015',
-      outDir: env.VITE_OUT_DIR || 'dist',
-      sourcemap: env.VITE_SOURCEMAP === 'true',
-      // brotliSize: false,
-      rollupOptions: {
-        plugins: env.VITE_USE_BUNDLE_ANALYZER === 'true' ? [visualizer()] : undefined,
-        // 拆包
-        output: {
-          manualChunks: {
-            'vue-chunks': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
-            'element-plus': ['element-plus'],
-            'wang-editor': ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
-            echarts: ['echarts', 'echarts-wordcloud']
-          }
-        }
-      },
-      cssCodeSplit: !(env.VITE_USE_CSS_SPLIT === 'false'),
-      cssTarget: ['chrome31']
-    },
-    server: {
-      port: 4000,
-      proxy: {
-        // 选项写法
-        '/api': {
-          target: 'http://127.0.0.1:8000',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      },
-      hmr: {
-        overlay: false
-      },
-      host: '0.0.0.0'
-    },
-    optimizeDeps: {
-      include: [
-        'vue',
-        'vue-router',
-        'vue-types',
-        'element-plus/es/locale/lang/zh-cn',
-        'element-plus/es/locale/lang/en',
-        '@iconify/iconify',
-        '@vueuse/core',
-        'axios',
-        'qs',
-        'echarts',
-        'echarts-wordcloud',
-        'qrcode',
-        '@wangeditor/editor',
-        '@wangeditor/editor-for-vue',
-        'vue-json-pretty',
-        '@zxcvbn-ts/core',
-        'dayjs',
-        'cropperjs'
-      ]
-    }
-  }
-}
+export default viteConfig;
