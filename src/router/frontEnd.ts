@@ -102,7 +102,7 @@ export function setCacheTagsViewRoutes() {
 	// const stores = useUserInfo(pinia);
 	const storesTagsView = useTagsViewRoutes(pinia);
 	// const { userInfos } = storeToRefs(stores);
-	let rolesRoutes = setFilterHasRolesMenu(dynamicRoutes, 1,['admin']);
+	let rolesRoutes = setFilterHasRolesMenu(dynamicRoutes, ['admin']);
 	// 添加到 pinia setTagsViewRoutes 中
 	storesTagsView.setTagsViewRoutes(formatTwoStageRoutes(formatFlatteningRoutes(rolesRoutes))[0].children);
 }
@@ -115,18 +115,13 @@ export function setCacheTagsViewRoutes() {
 export function setFilterMenuAndCacheTagsViewRoutes() {
 	const stores = useUserInfo(pinia);
 	const storesRoutesList = useRoutesList(pinia);
-	const { userInfos } = storeToRefs(stores);
-	let roleID = 1;
-	// if (userInfos.value.role_info.length > 0){
-	// 	userInfos.value.role_info.forEach((item: any) => {
-	// 		if (item.id == 1){
-	// 			roleID= 1
-	// 		}
-	// 	})
-	// 	return
-	// }
-	storesRoutesList.setRoutesList(setFilterHasRolesMenu(dynamicRoutes[0].children,roleID, userInfos.value.menu_info));
-	storesRoutesList.setRoutesAll(setFilterHasRolesMenu(dynamicRoutes[0].children,roleID, userInfos.value.menu_info));
+	console.log('111111111')
+	console.log(stores.userInfo)
+
+	console.log(stores.getApiUserInfo())
+	console.log('222222222')
+	storesRoutesList.setRoutesList(setFilterHasRolesMenu(dynamicRoutes[0].children, stores.userInfo.user_menu));
+	storesRoutesList.setRoutesAll(setFilterHasRolesMenu(dynamicRoutes[0].children, stores.userInfo.user_menu));
 	setCacheTagsViewRoutes();
 }
 
@@ -137,7 +132,20 @@ export function setFilterMenuAndCacheTagsViewRoutes() {
  * @returns 返回对比后有权限的路由项
  */
 export function hasRoles(roles: any, route: any) {
+	if (route.meta && route.meta.roles) return roles.some((role: any) => roles.includes(role));
+	else return true;
+	return true
+}
 
+
+export function hadPath(path: string, menus: string[]) {
+	// console.log(111111111)
+	// console.log(menus)
+	// console.log(path)
+	// console.log(222222222)
+	menus.forEach((v: any) => {
+		return
+	})
 	// if (route.meta && route.meta.roles) return roles.some((role: any) => roles.includes(role));
 	// else return true;
 	return true
@@ -146,22 +154,27 @@ export function hasRoles(roles: any, route: any) {
 /**
  * 获取当前用户权限标识去比对路由表，设置递归过滤有权限的路由
  * @param routes 当前路由 children
- * @param roles 用户权限标识，在 userInfos（用户信息）的 roles（登录页登录时缓存到浏览器）数组
+ * @param menus 用户权限标识，在 userInfos（用户信息）的 roles（登录页登录时缓存到浏览器）数组
  * @returns 返回有权限的路由数组 `meta.roles` 中控制
  */
-export function setFilterHasRolesMenu(routes: any,roles:number, menuInfo: any) {
+export function setFilterHasRolesMenu(routes: any, menus: string[]) {
 	const menu: any = [];
+	// console.log(routes)
 	routes.forEach((route: any) => {
 		const item = { ...route };
-		if (roles == 1){
-			if (item.children) item.children = setFilterHasRolesMenu(item.children,roles, menuInfo);
-			menu.push(item);
-		}else {
-			if (hasRoles(menuInfo, item.name)) {
-				if (item.children) item.children = setFilterHasRolesMenu(item.children,roles, menuInfo);
-				menu.push(item);
-			}
-		}
+		// hadPath(route.path,menus)
+		// if (item.path == )
+		// if (item.children) item.children = setFilterHasRolesMenu(item.children, menus);
+		// menu.push(item);
+		// if (roles == 1){
+		// 	if (item.children) item.children = setFilterHasRolesMenu(item.children,roles, menuInfo);
+		// 	menu.push(item);
+		// }else {
+		// 	if (hasRoles(menuInfo, item.name)) {
+		// 		if (item.children) item.children = setFilterHasRolesMenu(item.children,roles, menuInfo);
+		// 		menu.push(item);
+		// 	}
+		// }
 	});
 	return menu;
 }

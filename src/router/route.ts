@@ -404,7 +404,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 											isKeepAlive: true,
 											isAffix: false,
 											isIframe: false,
-											roles: ['admin', 'common'],
+											// roles: ['admin', 'common'],
 											icon: 'iconfont icon-caidan',
 										},
 									},

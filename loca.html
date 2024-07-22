@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WebSocket Client</title>
+    <title>WebSocket 分组广播测试</title>
 </head>
 <body>
-<script>
-    const url = "?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjA2MDY4NzksInVpZCI6MTEwMDE0fQ.Xv0__eJR-TpN5aW8NuDWzlXE3bzzBW5i58LbUmSjAvc";
-    const socket = new WebSocket('ws://49.235.129.65:6198/ws/business_msg'+url);
+<script type="text/javascript">
+    // var group = prompt("请输入组名:", "default");
+    const socket = new WebSocket('wss://staging.mix.iecen.zocenet.com/ws-api/ws/business_msg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjE3MTQ0ODMsInVpZCI6MTEwMDAxfQ.8oRcLIN7ISXkp1TXB4A1ibakAYJ7-Mfv0o9Prz9b9Ng'
+    );
     socket.onopen = function(event) {
-        console.log('Connected to WebSocket server.');
-        // var data = {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjAwODIyMjksInVpZCI6MTEwMDAxfQ.ITfFLcVrViMVFUW7_EfqJGI64V-JcTSYsRnRCBJbmPo"}
-        // socket.send("ping");
+        console.log("WebSocket 连接成功, 组: " + group);
+        // console.log('Connected to WebSocket server.');
+        // console.log("收到心跳");
+        // socket.send("pong");
         console.log(event)
     };
-
     socket.onmessage = function(event) {
         console.log('Received from server: ' + event.data);
         if (event.data ==="ping"){
@@ -23,19 +24,30 @@
     };
 
     socket.onclose = function(event) {
-        console.log('Disconnected from WebSocket server.');
+        console.log("WebSocket 连接关闭");
     };
 
     socket.onerror = function(error) {
-        console.log('WebSocket error: ' + error);
+        console.error("WebSocket 错误: " + event);
     };
+    // 处理心跳
+    socket.onping = function(event) {
+        console.log("收到心跳",event);
+        socket.send("pong");
+    };
+    function sendMessage() {
+        var message = document.getElementById("message").value;
+        socket.send(message);
+    }
 
     // Send a ping message every 50 seconds
     // 发送 ping 消息并处理 pong 响应
     setInterval(function() {
         console.log('Sending ping to server');
         socket.send('ping');
-    }, 29000);
+    }, 10000);
 </script>
+<input type="text" id="message" placeholder="输入消息">
+<button onclick="sendMessage()">发送</button>
 </body>
 </html>

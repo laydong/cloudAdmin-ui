@@ -44,7 +44,7 @@
 			</el-col>
 			<el-col :span="1"></el-col>
 			<el-col :span="8">
-        <el-image class="login-content-code" style="width: 100%;height: 20%;"  :src="state.ruleForm.image"></el-image>
+        <el-image class="login-content-code" @click="getCaptcha" style="padding-top: 20px;" :src="state.ruleForm.image"></el-image>
 			</el-col>
 		</el-form-item>
 		<el-form-item class="login-animation4">
@@ -65,7 +65,6 @@ import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
 import {useLoginApi} from "/@/api/login";
-import {useUserApi} from "/@/api/user";
 
 // 定义变量内容
 const { t } = useI18n();
@@ -76,9 +75,9 @@ const state = reactive({
 	ruleForm: {
 		username: '18000521880',
 		password: '123456',
-    captcha_id: '12345648',
-    captcha: '123456',
-    image: 'https://www.scxy88.cn/uploads/image/20210113/f605a9b88cf971df84e9e91a739b3c17.png'
+    captcha_id: '',
+    captcha: '',
+    image: ''
 	},
 	loading: {
 		signIn: false,
@@ -94,7 +93,7 @@ const getCaptcha = async ()=>{
   useLoginApi().getCaptcha().then((res:any)=>{
     if (res.code == 200){
       state.ruleForm.captcha_id = res.data.captcha_id
-      state.ruleForm.image = res.data.captcha
+      state.ruleForm.image = res.data.image
     }else {
       ElMessage.error(res.msg);
     }

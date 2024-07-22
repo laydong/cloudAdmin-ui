@@ -4,7 +4,7 @@
 
 // 用户信息
 declare interface UserInfosState<T = any> {
-	userInfos: {
+	userInfo: {
 		id : number;
 		username : string;
 		nickname:string;
@@ -14,9 +14,8 @@ declare interface UserInfosState<T = any> {
 		status:number;
 		login_ip:string;
 		login_time :string;
-		menu_info:UserRoleState[];
-		role:string,
-		role_info:string[];
+		user_menu:string[];
+		user_role:string,
 		describe:string,
 		email:string,
 		authBtnList: string[];

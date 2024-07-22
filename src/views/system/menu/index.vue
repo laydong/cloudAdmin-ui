@@ -90,7 +90,6 @@ const state = reactive({
 const getTableData = () => {
 	state.tableData.loading = true;
 	state.tableData.data = routesList.value;
-  console.log(state.tableData.data)
 	setTimeout(() => {
 		state.tableData.loading = false;
 	}, 500);
