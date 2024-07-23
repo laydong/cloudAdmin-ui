@@ -59,8 +59,8 @@
 		</div>
 		<el-dropdown :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
 			<span class="layout-navbars-breadcrumb-user-link">
-				<img :src="userInfos.avatar" class="layout-navbars-breadcrumb-user-link-photo mr5" />
-				{{ userInfos.nickname }}
+				<img :src="userInfo.avatar" class="layout-navbars-breadcrumb-user-link-photo mr5" />
+				{{ userInfo.nickname }}
 				<el-icon class="el-icon--right">
 					<ele-ArrowDown />
 				</el-icon>
@@ -102,7 +102,7 @@ const { locale, t } = useI18n();
 const router = useRouter();
 const stores = useUserInfo();
 const storesThemeConfig = useThemeConfig();
-const { userInfos } = storeToRefs(stores);
+const { userInfo } = storeToRefs(stores);
 const { themeConfig } = storeToRefs(storesThemeConfig);
 const searchRef = ref();
 const state = reactive({
@@ -171,7 +171,7 @@ const onHandleCommandClick = (path: string) => {
 			})
 			.catch(() => {});
 	} else if (path === 'wareHouse') {
-		window.open('https://gitee.com/lyt-top/vue-next-admin');
+		// window.open('https://gitee.com/lyt-top/vue-next-admin');
 	} else {
 		router.push(path);
 	}

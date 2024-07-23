@@ -17,7 +17,7 @@ export function useRole() {
 		},
 		getRoleListAll: () => {
 			return request({
-				url: '/role/list_all',
+				url: '/role/all',
 				method: 'get',
 			});
 		},

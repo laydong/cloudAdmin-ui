@@ -2,25 +2,28 @@
  * pinia 类型定义
  */
 
+declare interface UserInfo<T = any> {
+	id : number;
+	username : string;
+	nickname:string;
+	avatar:string;
+	sex :number;
+	mobile:string,
+	status:number;
+	login_ip:string;
+	login_time :string;
+	user_menu:string[];
+	user_role:string,
+	describe:string,
+	email:string,
+	roles: string[];
+	authBtnList: string[];
+	time: number;
+}
+
 // 用户信息
 declare interface UserInfosState<T = any> {
-	userInfo: {
-		id : number;
-		username : string;
-		nickname:string;
-		avatar:string;
-		sex :number;
-		mobile:string,
-		status:number;
-		login_ip:string;
-		login_time :string;
-		user_menu:string[];
-		user_role:string,
-		describe:string,
-		email:string,
-		authBtnList: string[];
-		time: number;
-	};
+	userInfo: UserInfo;
 }
 
 declare interface UserRoleState {

@@ -65,6 +65,7 @@ import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
 import {useLoginApi} from "/@/api/login";
+import {initBackEndControlRoutes} from "/@/router/backEnd";
 
 // 定义变量内容
 const { t } = useI18n();

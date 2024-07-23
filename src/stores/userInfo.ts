@@ -1,69 +1,67 @@
 import { defineStore } from 'pinia';
 import { Session } from '/@/utils/storage';
 import {useAdminApi} from "/@/api/admin";
-
 export const useUserInfo = defineStore('userInfo', {
 	state: (): UserInfosState => ({
 		userInfo: {
-			id:0,
-			username:'',
+			id : 0,
+			username : '',
 			nickname:'',
 			avatar:'',
-			sex:1,
+			sex :0,
 			mobile:'',
-			status:1,
-			login_time:'',
+			status:0,
 			login_ip:'',
-			time: 0,
-			user_role:'管理员',
+			login_time :'',
+			user_menu:[],
+			user_role:'',
 			describe:'',
 			email:'',
-			user_menu:[],
+			roles: [],
 			authBtnList: [],
+			time: 0,
 		},
 	}),
 	actions: {
 		async setUserInfos() {
-			Session.remove('userInfo')
 			// 存储用户信息到浏览器缓存
 			if (Session.get('userInfo')) {
 				this.userInfo = Session.get('userInfo');
-				return
-			}
-
-			if (this.userInfo.id == 0) {
-				return new Promise((resolve) => {
-						setTimeout(() => {
-							useAdminApi().getAdminInfo().then((res: any)=>{
-								if (res.code == 200 ) {
-									this.userInfo.id = res.data.id
-									this.userInfo.avatar = res.data.avatar
-									this.userInfo.nickname = res.data.nickname
-									this.userInfo.username = res.data.username
-									this.userInfo.sex = res.data.sex
-									this.userInfo.mobile = res.data.mobile
-									this.userInfo.status = res.data.status
-									this.userInfo.login_ip = res.data.login_ip
-									this.userInfo.login_time = res.data.login_time
-									this.userInfo.describe = res.data.describe
-									this.userInfo.email = res.data.email
-									this.userInfo.user_menu = res.data.user_menu
-									this.userInfo.user_role = res.data.user_role
-								}
-							})
-							// // admin 按钮权限标识
-							let adminAuthBtnList: Array<string> = ['btn.add', 'btn.del', 'btn.edit', 'btn.link'];
-							this.userInfo.time = new Date().getTime()
-							this.userInfo.authBtnList = adminAuthBtnList
-							Session.set('userInfo',this.userInfo)
-							return
-						})
-				})
+			} else {
+				this.userInfo = <UserInfo>await this.getApiUserInfo();
 			}
 		},
 		async getApiUserInfo() {
-			this.userInfo = Session.get('userInfo');
-			return this.userInfo
+			return new Promise((resolve) => {
+				setTimeout(() => {
+					var userInfo = this.userInfo
+						useAdminApi().getAdminInfo().then((res: any) => {
+							if (res.code == 200) {
+								userInfo.id = res.data.id;
+								userInfo.username = res.data.username;
+								userInfo.nickname = res.data.nickname;
+								userInfo.avatar = res.data.avatar;
+								userInfo.sex = res.data.sex;
+								userInfo.mobile = res.data.mobile;
+								userInfo.status = res.data.status;
+								userInfo.login_ip = res.data.login_ip;
+								userInfo.login_time = res.data.login_time;
+								userInfo.user_menu = res.data.user_menu;
+								userInfo.user_role = res.data.user_role;
+								userInfo.describe = res.data.describe;
+								userInfo.email = res.data.email;
+								let adminRoles: Array<string> = ['admin'];
+								// admin 按钮权限标识
+								let adminAuthBtnList: Array<string> = ['btn.add', 'btn.del', 'btn.edit', 'btn.link'];
+								userInfo.roles = adminRoles
+								userInfo.authBtnList = adminAuthBtnList
+								console.log(userInfo)
+								Session.set('userInfo', userInfo);
+								resolve(userInfo);
+							}
+						})
+				}, 0);
+			});
 		},
 	},
 });
