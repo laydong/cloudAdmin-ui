@@ -22,7 +22,6 @@ service.interceptors.request.use(
 		if (Session.get('token')) {
 			config.headers!['Authorization'] = `${Session.get('token')}`;
 		}
-		// config.headers!['APP-NAME'] = import.meta.env.VITE_APP_NAME;
 		return config;
 	},
 	(error) => {
@@ -38,14 +37,14 @@ service.interceptors.response.use(
 		const res = response.data;
 		if (res.code && res.code !== 200) {
 			// `token` 过期或者账号已在别处登录
-			if (res.code === 401 || res.code === 4001) {
+			if (res.code === 100401 || res.code === 401) {
 				Session.clear(); // 清除浏览器全部临时缓存
 				window.location.href = '/'; // 去登录页
 				ElMessageBox.alert('你已被登出，请重新登录', '提示', {})
 					.then(() => {})
 					.catch(() => {});
 			}
-			ElMessage.error(res.msg || 'Error');
+			return Promise.reject(service.interceptors.response);
 		} else {
 			return res;
 		}

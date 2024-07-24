@@ -17,7 +17,7 @@ export function useMenuApi() {
 		},
 		syncMenu: (params?: object) => {
 			return request({
-				url: '/import_menu',
+				url: '/menu/sync',
 				method: 'post',
 				data:params,
 			});

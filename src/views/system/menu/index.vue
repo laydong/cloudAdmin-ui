@@ -89,7 +89,15 @@ const state = reactive({
 // 获取路由数据，真实请从接口获取
 const getTableData = () => {
 	state.tableData.loading = true;
-	state.tableData.data = routesList.value;
+	// state.tableData.data = routesList.value;
+  useMenuApi().getMenuAll().then((res:any)=>{
+    if (res.code == 200 ) {
+      console.log(res)
+      state.tableData.data = res.data
+    }else {
+      ElMessage.error(res.msg);
+    }
+  })
 	setTimeout(() => {
 		state.tableData.loading = false;
 	}, 500);
@@ -119,7 +127,7 @@ const onTabelRowDel = (row: RouteRecordRaw) => {
 
 //同步菜单
 const onOpenSyncMenu = () => {
-  useMenuApi().syncMenu({'data':routesAll.value}).then((res:any)=>{
+  useMenuApi().syncMenu({'data':routesList.value}).then((res:any)=>{
     if (res.code == 200 ) {
       ElMessage.success(res.msg);
     }else {
