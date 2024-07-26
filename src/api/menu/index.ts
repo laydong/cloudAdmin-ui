@@ -37,9 +37,9 @@ export function useMenuApi() {
 		},
 		updateMenu: (params?: object) => {
 			return request({
-				url: '/menu/update',
+				url: '/menu/status',
 				method: 'post',
-				params,
+				data:params,
 			});
 		},
 	};
