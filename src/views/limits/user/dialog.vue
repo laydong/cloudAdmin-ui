@@ -79,8 +79,8 @@
 
 <script setup lang="ts" name="systemUserDialog">
 import { reactive, ref } from 'vue';
-import {useRole} from "/@/api/role";
-import {useAdminApi} from "/@/api/admin";
+import {useRole} from "/src/api/role";
+import {useAdminApi} from "/src/api/admin";
 import {ElMessage} from "element-plus";
 
 import type { UploadProps } from 'element-plus'

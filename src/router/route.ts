@@ -60,6 +60,15 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 					isIframe: false,
 					roles: ['admin', 'common'],
 					icon: 'iconfont icon-shouye',
+					isAuth:0,
+					isType:1,
+					apiData: [
+						{
+							url: 'v1.user.info',
+							method: 'get',
+							service_code: 'cloud-api'
+						}
+					]
 				},
 			},
 			{
@@ -79,69 +88,9 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 				},
 				children: [
 					{
-						path: '/system/menu',
-						name: 'systemMenu',
-						component: () => import('/@/views/system/menu/index.vue'),
-						meta: {
-							title: 'message.router.systemMenu',
-							isLink: '',
-							isHide: false,
-							isKeepAlive: true,
-							isAffix: false,
-							isIframe: false,
-							roles: ['admin'],
-							icon: 'iconfont icon-caidan',
-						},
-					},
-					{
-						path: '/system/role',
-						name: 'systemRole',
-						component: () => import('/@/views/system/role/index.vue'),
-						meta: {
-							title: 'message.router.systemRole',
-							isLink: '',
-							isHide: false,
-							isKeepAlive: true,
-							isAffix: false,
-							isIframe: false,
-							roles: ['admin'],
-							icon: 'ele-ColdDrink',
-						},
-					},
-					{
-						path: '/system/user',
-						name: 'systemUser',
-						component: () => import('/@/views/system/user/index.vue'),
-						meta: {
-							title: 'message.router.systemUser',
-							isLink: '',
-							isHide: false,
-							isKeepAlive: true,
-							isAffix: false,
-							isIframe: false,
-							roles: ['admin'],
-							icon: 'iconfont icon-icon-',
-						},
-					},
-					{
-						path: '/system/dept',
-						name: 'systemDept',
-						component: () => import('/@/views/system/dept/index.vue'),
-						meta: {
-							title: 'message.router.systemDept',
-							isLink: '',
-							isHide: false,
-							isKeepAlive: true,
-							isAffix: false,
-							isIframe: false,
-							roles: ['admin'],
-							icon: 'ele-OfficeBuilding',
-						},
-					},
-					{
 						path: '/system/dic',
 						name: 'systemDic',
-						component: () => import('/@/views/system/dic/index.vue'),
+						component: () => import('/src/views/limits/dic/index.vue'),
 						meta: {
 							title: 'message.router.systemDic',
 							isLink: '',
@@ -171,6 +120,66 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 					icon: 'iconfont icon-quanxian',
 				},
 				children: [
+					{
+						path: '/limits/menu',
+						name: 'limitsMenu',
+						component: () => import('/src/views/limits/menu/index.vue'),
+						meta: {
+							title: 'message.router.limitsMenu',
+							isLink: '',
+							isHide: false,
+							isKeepAlive: true,
+							isAffix: false,
+							isIframe: false,
+							roles: ['admin'],
+							icon: 'iconfont icon-caidan',
+						},
+					},
+					{
+						path: '/limits/role',
+						name: 'systemRole',
+						component: () => import('/src/views/limits/role/index.vue'),
+						meta: {
+							title: 'message.router.limitsRole',
+							isLink: '',
+							isHide: false,
+							isKeepAlive: true,
+							isAffix: false,
+							isIframe: false,
+							roles: ['admin'],
+							icon: 'ele-ColdDrink',
+						},
+					},
+					{
+						path: '/limits/user',
+						name: 'limitsUser',
+						component: () => import('/src/views/limits/user/index.vue'),
+						meta: {
+							title: 'message.router.limitsUser',
+							isLink: '',
+							isHide: false,
+							isKeepAlive: true,
+							isAffix: false,
+							isIframe: false,
+							roles: ['admin'],
+							icon: 'iconfont icon-icon-',
+						},
+					},
+					{
+						path: '/limits/dept',
+						name: 'limitsDept',
+						component: () => import('/@/views/system/dept/index.vue'),
+						meta: {
+							title: 'message.router.limitsDept',
+							isLink: '',
+							isHide: false,
+							isKeepAlive: true,
+							isAffix: false,
+							isIframe: false,
+							roles: ['admin'],
+							icon: 'ele-OfficeBuilding',
+						},
+					},
 					{
 						path: '/limits/frontEnd',
 						name: 'limitsFrontEnd',
