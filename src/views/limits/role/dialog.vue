@@ -66,7 +66,7 @@ const state = reactive({
     id :0,
     name: '',
     describe: '',
-    group_id:0,
+    pid:0,
     sort: 99,
     status: 1,
     menu_ids:[] as TreeKey[],
@@ -87,12 +87,12 @@ const state = reactive({
 const treeRef = ref<InstanceType<typeof ElTree>>()
 
 // 打开弹窗
-const openDialog = (type: string, row: RowRoleType) => {
+const openDialog = (type: string, row: any) => {
   state.dialog.type = type
 	if (type === 'edit') {
     state.ruleForm.id = row.id
     state.ruleForm.name = row.name
-    state.ruleForm.group_id = row.group_id
+    state.ruleForm.pid = row.pid
     state.ruleForm.status = row.status
     state.ruleForm.describe = row.describe
     state.ruleForm.sort = row.sort
@@ -112,11 +112,16 @@ const openDialog = (type: string, row: RowRoleType) => {
 		state.dialog.submitTxt = '新 增';
     state.ruleForm.id = 0
     state.ruleForm.name = ''
-    state.ruleForm.group_id = 0
+    state.ruleForm.pid = 0
     state.ruleForm.status = 1
     state.ruleForm.describe = ''
     state.ruleForm.sort = 99
     state.ruleForm.menu_ids = []
+    if (row > 0){
+      state.ruleForm.pid = row
+    }
+    console.log(row)
+    console.log(state.ruleForm)
 		// 清空表单，此项需加表单验证才能使用
 		// nextTick(() => {
 		// 	roleDialogFormRef.value.resetFields();
@@ -138,7 +143,7 @@ const onSubmit = () => {
 	closeDialog();
   state.ruleForm.menu_ids =treeRef.value!.getCheckedKeys(false)
 	if (state.dialog.type === 'add') {
-    useRole().CreateRole(state.ruleForm).then((res:any)=>{
+    useRole().UpdateRole(state.ruleForm).then((res:any)=>{
       if ( res.code == 200 ) {
         ElMessage.success(res.msg);
         emit('refresh');

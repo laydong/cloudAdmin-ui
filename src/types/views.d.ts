@@ -62,7 +62,7 @@ declare interface RowRoleType {
 	id :number;
 	name: string;
 	describe: string;
-	group_id:number;
+	pid:number;
 	sort: number;
 	status: number;
 	createTime: string;
