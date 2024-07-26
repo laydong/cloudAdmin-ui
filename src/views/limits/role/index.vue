@@ -10,20 +10,21 @@
         </el-button>
       </div>
 			<el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column prop="name" label="角色名称" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="sort" label="排序" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" label="角色状态" show-overflow-tooltip>
+        <el-table-column prop="name" label="角色名称" ></el-table-column>
+        <el-table-column prop="sort" label="排序" ></el-table-column>
+        <el-table-column prop="status" label="角色状态">
           <template #default="scope">
-            <el-switch :disabled="scope.row.id === 1" v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁" @click="OpenStatus(scope.row)"></el-switch>
+            <el-switch v-if="scope.row.id ===1" :disabled="true" v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁"></el-switch>
+            <el-switch v-else v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁"  v-if="scope.row.id !==1" @click="OpenStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column prop="describe" label="角色描述" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="created_at" label="创建时间" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="describe" label="角色描述"></el-table-column>
+        <el-table-column prop="created_at" label="创建时间"></el-table-column>
         <el-table-column label="操作" width="100">
           <template  #default="scope" >
-            <el-button :disabled="scope.row.id === 1" size="small" text type="primary" @click="onOpenAddRole('add', scope.row.id)">添加子角色</el-button>
-            <el-button :disabled="scope.row.id === 1" size="small" text type="primary" @click="onOpenEditRole('edit', scope.row)">修改</el-button>
-            <el-button :disabled="scope.row.id === 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
+            <el-button v-if="scope.row.id !== 1 && scope.row.pid === 1" size="small" text type="primary" @click="onOpenAddRole('add', scope.row.id)">添加子角色</el-button>
+            <el-button v-if="scope.row.id !== 1" size="small" text type="primary" @click="onOpenEditRole('edit', scope.row)">修改</el-button>
+            <el-button v-if="scope.row.id !== 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
 			</el-table>
@@ -35,7 +36,7 @@
 <script setup lang="ts" name="systemRole">
 import { defineAsyncComponent, ref, onMounted, reactive } from 'vue';
 import {ElMessage, ElMessageBox} from "element-plus";
-import {useRole} from "/src/api/role";
+import {useRole} from "/@/api/role";
 // 引入组件
 const RoleDialog = defineAsyncComponent(() => import('/src/views/limits/role/dialog.vue'));
 const roleDialogRef = ref();

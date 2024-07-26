@@ -53,8 +53,8 @@
 <script setup lang="ts" name="systemRoleDialog">
 import { reactive, ref } from 'vue';
 import { ElMessage,ElTree } from 'element-plus';
-import {useMenuApi} from "/src/api/menu";
-import {useRole} from "/src/api/role";
+import {useMenuApi} from "/@/api/menu";
+import {useRole} from "/@/api/role";
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(['refresh']);
 
@@ -91,12 +91,12 @@ const openDialog = (type: string, row: RowRoleType) => {
   state.dialog.type = type
 	if (type === 'edit') {
     state.ruleForm.id = row.id
-    // state.ruleForm.name = row.name
-    // state.ruleForm.group_id = row.group_id
-    // state.ruleForm.status = row.status
-    // state.ruleForm.describe = row.describe
-    // state.ruleForm.sort = row.sort
-    // state.ruleForm.menu_ids = []
+    state.ruleForm.name = row.name
+    state.ruleForm.group_id = row.group_id
+    state.ruleForm.status = row.status
+    state.ruleForm.describe = row.describe
+    state.ruleForm.sort = row.sort
+    state.ruleForm.menu_ids = []
 		state.dialog.title = '修改角色';
 		state.dialog.submitTxt = '修 改';
     useRole().getRoleInfo({"id":state.ruleForm.id}).then((res:any)=>{

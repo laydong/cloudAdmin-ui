@@ -51,10 +51,10 @@
 				<el-table-column prop="created_at" label="创建时间" show-overflow-tooltip></el-table-column>
 				<el-table-column label="操作" width="100">
 					<template #default="scope">
-						<el-button :disabled="scope.row.id === 1" size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)"
+						<el-button v-if="scope.row.id === 1" :disabled="scope.row.id === 1" size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)"
 							>修改</el-button
 						>
-						<el-button :disabled="scope.row.id === 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
+						<el-button v-if="scope.row.id === 1" :disabled="scope.row.id === 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -79,7 +79,7 @@
 <script setup lang="ts" name="systemUser">
 import { defineAsyncComponent, reactive, onMounted, ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
-import {useAdminApi} from "/src/api/admin";
+import {useAdminApi} from "/@/api/admin";
 
 // 引入组件
 const UserDialog = defineAsyncComponent(() => import('/src/views/limits/user/dialog.vue'));

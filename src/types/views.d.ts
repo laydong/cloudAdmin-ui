@@ -126,7 +126,7 @@ declare interface SysApiState {
 
 declare type TreeType = {
 	id: number
-	label: string
+	title: string
 	children?: TreeType[]
 };
 

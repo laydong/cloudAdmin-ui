@@ -1,72 +1,142 @@
 <template>
-  <div class="system-menu-container layout-pd">
-    <el-card shadow="hover">
-      <el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column prop="title" width="220" label="菜单名称"></el-table-column>
-        <el-table-column prop="number" label="菜单标识"></el-table-column>
-        <el-table-column prop="type" label="菜单类型" show-overflow-tooltip>
-          <template #default="scope">
-            <el-tag type="success" v-if="scope.row.type === 1">菜单</el-tag>
-            <el-tag type="info" v-else>按钮</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="is_auth" label="菜单权限" show-overflow-tooltip>
-          <template #default="scope">
-            <el-tag type="success" v-if="scope.row.is_auth">权限</el-tag>
-            <el-tag type="info" v-else>公共</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="url" label="菜单路由"></el-table-column>
-        <el-table-column prop="status" label="菜单启用状态" show-overflow-tooltip>
-          <template #default="scope">
-            <el-switch :disabled="scope.row.id === 1" v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁" @click="OpenStatus(scope.row)"></el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column prop="describe" label="角色描述" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="updated_at" label="更新时间" show-overflow-tooltip></el-table-column>
-      </el-table>
-    </el-card>
-    <RoleDialog ref="roleDialogRef" @refresh="getTableData()" />
-  </div>
+	<div class="system-menu-container layout-pd">
+		<el-card shadow="hover">
+			<div class="system-menu-search mb15">
+<!--				<el-input size="default" placeholder="请输入菜单名称" style="max-width: 180px"> </el-input>-->
+<!--				<el-button size="default" type="primary" class="ml10">-->
+<!--					<el-icon>-->
+<!--						<ele-Search />-->
+<!--					</el-icon>-->
+<!--					查询-->
+<!--				</el-button>-->
+<!--				<el-button size="default" type="success" class="ml10" @click="onOpenAddMenu">-->
+<!--					<el-icon>-->
+<!--						<ele-FolderAdd />-->
+<!--					</el-icon>-->
+<!--					新增菜单-->
+<!--				</el-button>-->
+        <el-button size="default" type="primary" class="ml10" @click="onOpenSyncMenu">同步菜单</el-button>
+			</div>
+			<el-table
+				:data="state.tableData.data"
+				v-loading="state.tableData.loading"
+				style="width: 100%"
+				row-key="path"
+				:tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+			>
+				<el-table-column label="菜单名称" show-overflow-tooltip>
+					<template #default="scope">
+						<SvgIcon :name="scope.row.meta.icon" />
+						<span class="ml10">{{ $t(scope.row.meta.title) }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column prop="path" label="路由路径" show-overflow-tooltip></el-table-column>
+				<el-table-column label="组件路径" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ scope.row.component }}</span>
+					</template>
+				</el-table-column>
+<!--				<el-table-column label="权限标识" show-overflow-tooltip>-->
+<!--					<template #default="scope">-->
+<!--						<span>{{ scope.row.meta.roles }}</span>-->
+<!--					</template>-->
+<!--				</el-table-column>-->
+				<el-table-column label="排序" show-overflow-tooltip width="80">
+					<template #default="scope">
+						{{ scope.$index }}
+					</template>
+				</el-table-column>
+				<el-table-column label="类型" show-overflow-tooltip width="80">
+					<template #default="scope">
+						<el-tag type="success" size="small">{{ scope.row.xx }}菜单</el-tag>
+					</template>
+				</el-table-column>
+<!--				<el-table-column label="操作" show-overflow-tooltip width="140">-->
+<!--					<template #default="scope">-->
+<!--						<el-button size="small" text type="primary" @click="onOpenAddMenu('add')">新增</el-button>-->
+<!--						<el-button size="small" text type="primary" @click="onOpenEditMenu('edit', scope.row)">修改</el-button>-->
+<!--						<el-button size="small" text type="primary" @click="onTabelRowDel(scope.row)">删除</el-button>-->
+<!--					</template>-->
+<!--				</el-table-column>-->
+			</el-table>
+		</el-card>
+		<MenuDialog ref="menuDialogRef" @refresh="getTableData()" />
+	</div>
 </template>
 
-<script setup lang="ts" name="systemRole">
+<script setup lang="ts" name="systemMenu">
 import { defineAsyncComponent, ref, onMounted, reactive } from 'vue';
-import {ElMessage} from "element-plus";
-import {useMenuApi} from "/src/api/menu";
-import {RouteRecordRaw} from "vue-router";
+import { RouteRecordRaw } from 'vue-router';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { storeToRefs } from 'pinia';
+import { useRoutesList } from '/@/stores/routesList';
+import {useMenuApi} from "/@/api/menu";
+
 // 引入组件
-const RoleDialog = defineAsyncComponent(() => import('/src/views/limits/role/dialog.vue'));
-const roleDialogRef = ref();
+const MenuDialog = defineAsyncComponent(() => import('/@/views/limits/menu/dialog.vue'));
+
+// 定义变量内容
+const stores = useRoutesList();
+const { routesList ,routesAll} = storeToRefs(stores);
+const menuDialogRef = ref();
 const state = reactive({
-  tableData: {
-    data: [],
-    loading: true,
-  },
+	tableData: {
+		data: [] as RouteRecordRaw[],
+		loading: true,
+	},
 });
-// 获取角色数据
+
+// 获取路由数据，真实请从接口获取
 const getTableData = () => {
-  state.tableData.loading = true;
-  useMenuApi().getMenuAll().then((res:any)=>{
-    if (res.code == 200 ) {
-      state.tableData.data =  res.data;
-    }
-  })
-  setTimeout(() => {
-    state.tableData.loading = false;
-  }, 500);
+	state.tableData.loading = true;
+	state.tableData.data = routesList.value;
+  // useMenuApi().getMenuAll().then((res:any)=>{
+  //   if (res.code == 200 ) {
+  //     console.log(res)
+  //     state.tableData.data = res.data
+  //   }else {
+  //     ElMessage.error(res.msg);
+  //   }
+  // })
+	setTimeout(() => {
+		state.tableData.loading = false;
+	}, 500);
+};
+// 打开新增菜单弹窗
+const onOpenAddMenu = (type: string) => {
+	menuDialogRef.value.openDialog(type);
+};
+// 打开编辑菜单弹窗
+const onOpenEditMenu = (type: string, row: RouteRecordRaw) => {
+	menuDialogRef.value.openDialog(type, row);
+};
+// 删除当前行
+const onTabelRowDel = (row: RouteRecordRaw) => {
+	ElMessageBox.confirm(`此操作将永久删除路由：${row.path}, 是否继续?`, '提示', {
+		confirmButtonText: '删除',
+		cancelButtonText: '取消',
+		type: 'warning',
+	})
+		.then(() => {
+			ElMessage.success('删除成功');
+			getTableData();
+			//await setBackEndControlRefreshRoutes() // 刷新菜单，未进行后端接口测试
+		})
+		.catch(() => {});
 };
 
-//更新状态
-const OpenStatus = (row:any) =>{
-  useMenuApi().updateMenu({'id':row.id,'status':row.status}).then((res:any)=>{
-    if (res.code != 200 ) {
-      ElMessage.error('更新失败');
+//同步菜单
+const onOpenSyncMenu = () => {
+  useMenuApi().syncMenu({'data':routesList.value}).then((res:any)=>{
+    if (res.code == 200 ) {
+      ElMessage.success(res.msg);
+    }else {
+      ElMessage.error(res.msg);
     }
   })
 }
 // 页面加载时
 onMounted(() => {
-  getTableData();
+	getTableData();
 });
 </script>

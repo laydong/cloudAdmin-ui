@@ -36,7 +36,7 @@ export function useRole() {
 		},
 		UpdateRole: (params?: object) => {
 			return request({
-				url: '/role/update',
+				url: '/role/save',
 				method: 'post',
 				data:params,
 			});
