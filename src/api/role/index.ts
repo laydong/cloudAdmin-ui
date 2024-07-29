@@ -41,11 +41,10 @@ export function useRole() {
 				data:params,
 			});
 		},
-		CreateRole: (params?: object) => {
+		Available: () => {
 			return request({
-				url: '/role/create',
-				method: 'post',
-				data:params,
+				url: '/role/available',
+				method: 'get',
 			});
 		},
 		DelRole: (params?: object) => {

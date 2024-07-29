@@ -40,21 +40,22 @@
           </template>
         </el-table-column>
 				<el-table-column prop="mobile" label="手机号" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="user_role" label="角色" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="email" label="邮箱" show-overflow-tooltip></el-table-column>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-switch :disabled="scope.row.id === 1" v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁" @click="OpenStatus(scope.row)"></el-switch>
+            <el-switch v-if="scope.row.id === 1" :disabled="scope.row.id === 1" v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁"></el-switch>
+            <el-switch v-else v-model="scope.row.status" :active-value="1" :inactive-value="2" inline-prompt active-text="启" inactive-text="禁" @click="OpenStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
 				<el-table-column prop="describe" label="用户描述" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="created_at" label="创建时间" show-overflow-tooltip></el-table-column>
 				<el-table-column label="操作" width="100">
 					<template #default="scope">
-						<el-button v-if="scope.row.id === 1" :disabled="scope.row.id === 1" size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)"
+						<el-button size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)"
 							>修改</el-button
 						>
-						<el-button v-if="scope.row.id === 1" :disabled="scope.row.id === 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
+						<el-button v-if="scope.row.id !== 1" :disabled="scope.row.id === 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -96,8 +97,8 @@ const state = reactive<SysUserState>({
       status:0,
       sex:0,
       nickname:'',
-			page: 1,
-      per_page: 10,
+      currentPage: 1,
+      pageSize: 10,
 		},
 	},
 });

@@ -188,7 +188,7 @@ const onSubmit = () => {
 };
 // 初始化部门数据
 const getMenuData = () => {
-  useRole().getRoleAll().then((res:any)=>{
+  useRole().Available().then((res:any)=>{
     if (res.code == 200 ) {
       state.roleData = res.data
     }
