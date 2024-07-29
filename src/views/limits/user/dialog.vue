@@ -15,7 +15,7 @@
 					</el-col>
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
 						<el-form-item label="关联角色">
-              <el-select v-model="state.ruleForm.role_ids" multiple placeholder="选择用户角色" style="width: 240px">
+              <el-select :disabled="state.ruleForm.id===1" v-model="state.ruleForm.role_ids" multiple placeholder="选择用户角色" style="width: 240px">
                 <el-option v-for="item in state.roleData" :key="item.id" :label="item.name" :value="item.id"/>
               </el-select>
 						</el-form-item>
@@ -124,6 +124,9 @@ const openDialog = (type: string, row: RowUserType) => {
     useAdminApi().getAdminUser({"id":row.id}).then((res:any)=>{
       if ( res.code == 200 ) {
         state.ruleForm = res.data
+        if (state.ruleForm.id === 1){
+          state.ruleForm.role_ids = [1]
+        }
       }else {
         ElMessage.error(res.msg);
         return
