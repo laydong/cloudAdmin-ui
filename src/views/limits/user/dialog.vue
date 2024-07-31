@@ -145,7 +145,7 @@ const openDialog = (type: string, row: RowUserType) => {
     state.ruleForm.mobile = '';
     state.ruleForm.sex = 1;
     state.ruleForm.status = 1;
-    state.ruleForm.role_info = [];
+    state.ruleForm.role_ids = [];
     state.ruleForm.describe = '';
 
 		// 清空表单，此项需加表单验证才能使用

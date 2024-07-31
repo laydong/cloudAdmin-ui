@@ -87,7 +87,7 @@ const UserDialog = defineAsyncComponent(() => import('/src/views/limits/user/dia
 
 // 定义变量内容
 const userDialogRef = ref();
-const state = reactive<SysUserState>({
+const state = reactive<>({
 	tableData: {
 		data: [],
 		total: 0,
@@ -124,6 +124,19 @@ const onOpenAddUser = (type: string) => {
 const onOpenEditUser = (type: string, row: RowUserType) => {
 	userDialogRef.value.openDialog(type, row);
 };
+
+const delUser = () => {
+  state.tableData.loading = true;
+  useAdminApi().getAdminList(state.tableData.param).then((res:any)=>{
+    if (res.code == 200 ) {
+      state.tableData.data =  res.data.data;
+      state.tableData.total = state.tableData.data.length;
+    }
+  })
+  setTimeout(() => {
+    state.tableData.loading = false;
+  }, 500);
+};
 // 删除用户
 const onRowDel = (row: RowUserType) => {
 	ElMessageBox.confirm(`此操作将永久删除账户名称：“${row.username}”，是否继续?`, '提示', {
@@ -132,6 +145,7 @@ const onRowDel = (row: RowUserType) => {
 		type: 'warning',
 	})
 		.then(() => {
+
 			getTableData();
 			ElMessage.success('删除成功');
 		})

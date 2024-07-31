@@ -30,14 +30,14 @@ export function useAdminApi() {
 		},
 		AdminUpdate: (data?: object) => {
 			return request({
-				url: '/admin/user_up',
+				url: '/name/save',
 				method: 'post',
 				data:data,
 			});
 		},
 		AdminCreate: (data?: object) => {
 			return request({
-				url: '/name/create',
+				url: '/name/add',
 				method: 'post',
 				data:data,
 			});
