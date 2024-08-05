@@ -30,7 +30,7 @@
 				<el-table-column prop="nickname" label="用户昵称" show-overflow-tooltip></el-table-column>
         <el-table-column prop="sex" label="头像" show-overflow-tooltip>
           <template #default="scope">
-            <el-avatar shape="square" :size="size" :src="scope.row.avatar" />
+            <el-avatar shape="square" :size="100" :src="scope.row.avatar" />
           </template>
         </el-table-column>
         <el-table-column prop="sex" label="性别" show-overflow-tooltip>
@@ -65,7 +65,7 @@
 				class="mt15"
 				:pager-count="5"
 				:page-sizes="[10, 20, 30]"
-				v-model:current-page="state.tableData.param.pageNum"
+				v-model:current-page="state.tableData.param.currentPage"
 				background
 				v-model:page-size="state.tableData.param.pageSize"
 				layout="total, sizes, prev, pager, next, jumper"
@@ -84,10 +84,9 @@ import {useAdminApi} from "/@/api/admin";
 
 // 引入组件
 const UserDialog = defineAsyncComponent(() => import('/src/views/limits/user/dialog.vue'));
-
 // 定义变量内容
 const userDialogRef = ref();
-const state = reactive<>({
+const state = reactive({
 	tableData: {
 		data: [],
 		total: 0,
@@ -145,9 +144,14 @@ const onRowDel = (row: RowUserType) => {
 		type: 'warning',
 	})
 		.then(() => {
-
-			getTableData();
-			ElMessage.success('删除成功');
+      useAdminApi().AdminClose({'ids':[row.id]}).then((res:any)=>{
+        if (res.code != 200 ) {
+          ElMessage.error(res.msg);
+        }else {
+          getTableData();
+          ElMessage.success('删除成功');
+        }
+      })
 		})
 		.catch(() => {});
 };
@@ -165,20 +169,13 @@ const onOpenSearch = ()=>{
     state.tableData.loading = false;
   }, 500);
 }
-const OpenStatus = (row:any) =>{
-  useAdminApi().AdminStatus({'id':row.id,'status':row.status}).then((res:any)=>{
-    if (res.code != 200 ) {
-      ElMessage.success('更新失败');
-    }
-  })
-}
 const onHandleSizeChange = (val: number) => {
 	state.tableData.param.pageSize = val;
 	getTableData();
 };
 // 分页改变
 const onHandleCurrentChange = (val: number) => {
-	state.tableData.param.pageNum = val;
+	state.tableData.param.currentPage = val;
 	getTableData();
 };
 // 页面加载时

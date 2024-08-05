@@ -42,5 +42,12 @@ export function useAdminApi() {
 				data:data,
 			});
 		},
+		AdminClose: (data?: object) => {
+			return request({
+				url: '/name/close',
+				method: 'post',
+				data:data,
+			});
+		},
 	};
 }
