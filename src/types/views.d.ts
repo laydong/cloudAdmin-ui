@@ -17,10 +17,9 @@ declare type PersonalState = {
 	newsInfoList: NewInfo[];
 	recommendList: Recommend[];
 	personalForm: {
-		name: string;
+		nickname:string;
 		email: string;
 		describe: string;
-		// occupation: string;
 		phone: string;
 		sex: number;
 	};

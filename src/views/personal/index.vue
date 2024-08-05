@@ -7,21 +7,21 @@
 					<div class="personal-user">
 						<div class="personal-user-left">
 							<el-upload class="h100 personal-user-left-upload" action="https://jsonplaceholder.typicode.com/posts/" multiple :limit="1">
-								<img :src="userInfos.avatar" />
+								<img :src="stores.userInfo.avatar" />
 							</el-upload>
 						</div>
 						<div class="personal-user-right">
 							<el-row>
-								<el-col :span="24" class="personal-title mb18">{{ currentTime }}，{{userInfos.nickname}}，{{userInfos.describe}} </el-col>
+								<el-col :span="24" class="personal-title mb18">{{ currentTime }}，{{stores.userInfo.nickname}}，{{stores.userInfo.describe}} </el-col>
 								<el-col :span="24">
 									<el-row>
 										<el-col :xs="24" :sm="8" class="personal-item mb6">
 											<div class="personal-item-label">昵称：</div>
-											<div class="personal-item-value">{{userInfos.nickname}}</div>
+											<div class="personal-item-value">{{stores.userInfo.nickname}}</div>
 										</el-col>
 										<el-col :xs="24" :sm="16" class="personal-item mb6">
 											<div class="personal-item-label">身份：</div>
-											<div class="personal-item-value">{{userInfos.role}}</div>
+											<div class="personal-item-value">{{stores.userInfo.roles}}</div>
 										</el-col>
 									</el-row>
 								</el-col>
@@ -29,11 +29,11 @@
 									<el-row>
 										<el-col :xs="24" :sm="8" class="personal-item mb6">
 											<div class="personal-item-label">登录IP：</div>
-											<div class="personal-item-value">{{userInfos.login_ip}}</div>
+											<div class="personal-item-value">{{stores.userInfo.login_ip}}</div>
 										</el-col>
 										<el-col :xs="24" :sm="16" class="personal-item mb6">
 											<div class="personal-item-label">登录时间：</div>
-											<div class="personal-item-value">{{userInfos.login_time}}</div>
+											<div class="personal-item-value">{{stores.userInfo.login_time}}</div>
 										</el-col>
 									</el-row>
 								</el-col>
@@ -85,7 +85,7 @@
 						<el-row :gutter="35">
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
 								<el-form-item label="昵称">
-									<el-input v-model="state.personalForm.name" placeholder="请输入昵称" clearable></el-input>
+									<el-input v-model="state.personalForm.nickname" placeholder="请输入昵称" clearable></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
@@ -95,7 +95,7 @@
 							</el-col>
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
 								<el-form-item label="签名">
-									<el-input v-model="state.personalForm.autograph" placeholder="请输入签名" clearable></el-input>
+									<el-input v-model="state.personalForm.describe" placeholder="请输入签名" clearable></el-input>
 								</el-form-item>
 							</el-col>
 <!--							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">-->
@@ -115,7 +115,7 @@
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
 								<el-form-item label="性别">
 									<el-select v-model="state.personalForm.sex" placeholder="请选择性别" clearable class="w100">
-										<el-option label="男" v-model:disabled="state.personalForm.sex" value="1"></el-option>
+										<el-option label="男"  :disabled="state.personalForm.sex ===1" value="1"></el-option>
 										<el-option label="女" value="2"></el-option>
 									</el-select>
 								</el-form-item>
@@ -191,16 +191,17 @@ import {storeToRefs} from "pinia";
 import {useUserInfo} from "/@/stores/userInfo";
 const stores = useUserInfo();
 const { userInfos } = storeToRefs(stores);
+console.log(stores.userInfo)
 // 定义变量内容
 const state = reactive<PersonalState>({
 	newsInfoList,
 	recommendList,
 	personalForm: {
-		name: stores.userInfos.nickname,
-		email: stores.userInfos.email,
-    describe: stores.userInfos.describe,
-		phone: stores.userInfos.mobile,
-		sex: stores.userInfos.sex,
+    nickname: stores.userInfo.nickname,
+		email: stores.userInfo.email,
+    describe: stores.userInfo.describe,
+		phone: stores.userInfo.mobile,
+		sex: stores.userInfo.sex,
 	},
 });
 

@@ -67,12 +67,12 @@
 			</span>
 			<template #dropdown>
 				<el-dropdown-menu>
-					<el-dropdown-item command="/home">{{ $t('message.admin.dropdown1') }}</el-dropdown-item>
+<!--					<el-dropdown-item command="/home"></el-dropdown-item>-->
 <!--					<el-dropdown-item command="wareHouse">{{ $t('message.admin.dropdown6') }}</el-dropdown-item>-->
-					<el-dropdown-item command="/personal">{{ $t('message.admin.dropdown2') }}</el-dropdown-item>
+					<el-dropdown-item command="/personal">个人中心</el-dropdown-item>
 <!--					<el-dropdown-item command="/404">{{ $t('message.admin.dropdown3') }}</el-dropdown-item>-->
 <!--					<el-dropdown-item command="/401">{{ $t('message.admin.dropdown4') }}</el-dropdown-item>-->
-					<el-dropdown-item divided command="logOut">{{ $t('message.admin.dropdown5') }}</el-dropdown-item>
+					<el-dropdown-item divided command="logOut">退出登陆</el-dropdown-item>
 				</el-dropdown-menu>
 			</template>
 		</el-dropdown>
