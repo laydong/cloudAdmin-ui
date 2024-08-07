@@ -7,7 +7,7 @@
 					<div class="personal-user">
 						<div class="personal-user-left">
 							<el-upload class="h100 personal-user-left-upload" action="https://jsonplaceholder.typicode.com/posts/" multiple :limit="1">
-								<img :src="stores.userInfo.avatar" />
+								<img :src="state.personalForm.avatar" />
 							</el-upload>
 						</div>
 						<div class="personal-user-right">
@@ -109,20 +109,21 @@
 <!--							</el-col>-->
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
 								<el-form-item label="手机">
-									<el-input v-model="state.personalForm.phone" placeholder="请输入手机" clearable></el-input>
+									<el-input v-model="state.personalForm.mobile" placeholder="请输入手机" clearable></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb20">
 								<el-form-item label="性别">
-									<el-select v-model="state.personalForm.sex" placeholder="请选择性别" clearable class="w100">
-										<el-option label="男"  :disabled="state.personalForm.sex ===1" value="1"></el-option>
-										<el-option label="女" value="2"></el-option>
+									<el-select v-model="state.personalForm.sex" disabled placeholder="请选择性别" class="w100">
+										<el-option :key="1" label="男" value="1"></el-option>
+										<el-option :key="2"  label="女" value="2"></el-option>
+                    <el-option :key="0"  label="保密" value="0"></el-option>
 									</el-select>
 								</el-form-item>
 							</el-col>
 							<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 								<el-form-item>
-									<el-button type="primary">
+									<el-button type="primary" @click="SaveAdminInfo()">
 										<el-icon>
 											<ele-Position />
 										</el-icon>
@@ -132,18 +133,18 @@
 							</el-col>
 						</el-row>
 					</el-form>
-					<div class="personal-edit-title mb15">账号安全</div>
-					<div class="personal-edit-safe-box">
-						<div class="personal-edit-safe-item">
-							<div class="personal-edit-safe-item-left">
-								<div class="personal-edit-safe-item-left-label">账户密码</div>
-								<div class="personal-edit-safe-item-left-value">当前密码强度：强</div>
-							</div>
-							<div class="personal-edit-safe-item-right">
-								<el-button text type="primary">立即修改</el-button>
-							</div>
-						</div>
-					</div>
+<!--					<div class="personal-edit-title mb15">账号安全</div>-->
+<!--					<div class="personal-edit-safe-box">-->
+<!--						<div class="personal-edit-safe-item">-->
+<!--							<div class="personal-edit-safe-item-left">-->
+<!--								<div class="personal-edit-safe-item-left-label">账户密码</div>-->
+<!--								<div class="personal-edit-safe-item-left-value">当前密码强度：强</div>-->
+<!--							</div>-->
+<!--							<div class="personal-edit-safe-item-right">-->
+<!--								<el-button text type="primary">立即修改</el-button>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
 <!--					<div class="personal-edit-safe-box">-->
 <!--						<div class="personal-edit-safe-item">-->
 <!--							<div class="personal-edit-safe-item-left">-->
@@ -189,6 +190,7 @@ import { formatAxis } from '/@/utils/formatTime';
 import { newsInfoList, recommendList } from './mock';
 import {storeToRefs} from "pinia";
 import {useUserInfo} from "/@/stores/userInfo";
+import {useAdminApi} from "/@/api/admin";
 const stores = useUserInfo();
 const { userInfos } = storeToRefs(stores);
 console.log(stores.userInfo)
@@ -197,13 +199,27 @@ const state = reactive<PersonalState>({
 	newsInfoList,
 	recommendList,
 	personalForm: {
+    id:stores.userInfo.id,
     nickname: stores.userInfo.nickname,
+    avatar:stores.userInfo.avatar,
 		email: stores.userInfo.email,
     describe: stores.userInfo.describe,
-		phone: stores.userInfo.mobile,
+    mobile: stores.userInfo.mobile,
 		sex: stores.userInfo.sex,
 	},
 });
+
+// 更新用户信息
+const SaveAdminInfo = () => {
+  useAdminApi().AdminUpdate(state.personalForm).then((res:any)=>{
+    if (res.code == 200 ) {
+      stores.getApiUserInfo()
+    }
+  })
+  // setTimeout(() => {
+  //   state.tableData.loading = false;
+  // }, 500);
+};
 
 // 当前时间提示语
 const currentTime = computed(() => {
