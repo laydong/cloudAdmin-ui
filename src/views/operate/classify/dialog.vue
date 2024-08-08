@@ -4,30 +4,23 @@
 			<el-form ref="userDialogFormRef" :model="state.ruleForm" size="default" label-width="90px">
 				<el-row :gutter="35">
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="账户名称">
-							<el-input v-model="state.ruleForm.username" placeholder="请输入账户名称" clearable></el-input>
+						<el-form-item label="分类名称">
+							<el-input v-model="state.ruleForm.title" placeholder="请输入账户名称" clearable></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="用户昵称">
-							<el-input v-model="state.ruleForm.nickname" placeholder="请输入用户昵称" clearable></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="关联角色">
-              <el-select :disabled="state.ruleForm.id===1" v-model="state.ruleForm.role_ids" multiple placeholder="选择用户角色" style="width: 240px">
-                <el-option v-for="item in state.roleData" :key="item.id" :label="item.name" :value="item.id"/>
-              </el-select>
+						<el-form-item label="别名">
+							<el-input v-model="state.ruleForm.alias" placeholder="请输入用户昵称" clearable></el-input>
 						</el-form-item>
 					</el-col>
           <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="mb20">
-            <el-form-item label="头像">
+            <el-form-item label="图标">
               <el-upload class="avatar-uploader" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload"
               >
-                <img v-if="state.ruleForm.avatar" :src="state.ruleForm.avatar" class="avatar" />
+                <img v-if="state.ruleForm.icon" :src="state.ruleForm.icon" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
               </el-upload>
             </el-form-item>
@@ -56,7 +49,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="用户状态">
+						<el-form-item label="状态">
 							<el-switch v-model="state.ruleForm.status" :active-value="1" :inactive-value="2"  inline-prompt active-text="启" inactive-text="禁"></el-switch>
 						</el-form-item>
 					</el-col>
