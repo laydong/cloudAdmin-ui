@@ -191,6 +191,7 @@ import { newsInfoList, recommendList } from './mock';
 import {storeToRefs} from "pinia";
 import {useUserInfo} from "/@/stores/userInfo";
 import {useAdminApi} from "/@/api/admin";
+import {ElMessage} from "element-plus";
 const stores = useUserInfo();
 const { userInfos } = storeToRefs(stores);
 console.log(stores.userInfo)
@@ -214,6 +215,7 @@ const SaveAdminInfo = () => {
   useAdminApi().AdminUpdate(state.personalForm).then((res:any)=>{
     if (res.code == 200 ) {
       stores.getApiUserInfo()
+      ElMessage.success(`更新成功`);
     }
   })
   // setTimeout(() => {

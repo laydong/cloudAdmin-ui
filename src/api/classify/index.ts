@@ -6,30 +6,30 @@ import request from '/@/utils/request';
  * @method getArticleList 获取帖子列表
  * @method getArticleInfo 更新帖子信息
  */
-export function useClassifyData() {
+export function useClassify() {
 	return {
-		getArticleList: (params?: object) => {
+		getClassifyList: (params?: object) => {
 			return request({
 				url: '/classify/list',
 				method: 'get',
 				params,
 			});
 		},
-		getArticleInfo: (params?: object) => {
+		getClassifyInfo: (params?: object) => {
 			return request({
 				url: '/classify/info',
 				method: 'get',
 				params,
 			});
 		},
-		UpdateArticle: (params?: object) => {
+		saveClassify: (params?: object) => {
 			return request({
 				url: '/classify/save',
 				method: 'post',
 				data:params,
 			});
 		},
-		DelArticle: (params?: object) => {
+		closeClassify: (params?: object) => {
 			return request({
 				url: '/classify/close',
 				method: 'post',

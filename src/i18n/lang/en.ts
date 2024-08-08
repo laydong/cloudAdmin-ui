@@ -107,6 +107,8 @@ export default {
 		logOutConfirm: 'determine',
 		logOutCancel: 'cancel',
 		logOutExit: 'Exiting',
+		operate:'Operation Management',
+		operateClassify:'Industry Type'
 	},
 	tagsView: {
 		refresh: 'refresh',
