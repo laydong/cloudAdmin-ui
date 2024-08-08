@@ -132,10 +132,10 @@ const openDialog = (type: string, row: RowUserType) => {
         return
       }
     })
-		state.dialog.title = '修改用户';
+		state.dialog.title = '编辑分类';
 		state.dialog.submitTxt = '修 改';
 	} else {
-		state.dialog.title = '新增用户';
+		state.dialog.title = '新增分类';
 		state.dialog.submitTxt = '新 增';
     state.ruleForm.id =0;
     state.ruleForm.nickname = '';
