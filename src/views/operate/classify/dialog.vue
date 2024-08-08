@@ -84,6 +84,7 @@ import {useAdminApi} from "/@/api/admin";
 import {ElMessage} from "element-plus";
 
 import type { UploadProps } from 'element-plus'
+import {useClassify} from "/@/api/classify";
 
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(['refresh']);
@@ -93,18 +94,13 @@ const userDialogFormRef = ref();
 const state = reactive({
 	ruleForm: {
     id:0,
-    username: '', //账号
-    nickname: '',//昵称
-    password:'',//密码
-    avatar: '', //头像
-    email: '',
-    mobile: '',
-    sex: 1,
-    score: '',
+    title: '', //分类名
+    alias: '',//别名
+    pid:0,//上级ID
+    level: 0, //等级
     status: 1,
-    role_ids:[],
-    role_info:[],
-    role:'',
+    icon: '',//图标
+    sort: 99,
     describe: '',
 	},
   roleData:[],
@@ -121,12 +117,9 @@ const state = reactive({
 const openDialog = (type: string, row: RowUserType) => {
   state.dialog.type = type
 	if (type === 'edit') {
-    useAdminApi().getAdminUser({"id":row.id}).then((res:any)=>{
+    useClassify().getClassifyInfo({"id":row.id}).then((res:any)=>{
       if ( res.code == 200 ) {
         state.ruleForm = res.data
-        if (state.ruleForm.id === 1){
-          state.ruleForm.role_ids = [1]
-        }
       }else {
         ElMessage.error(res.msg);
         return
@@ -138,20 +131,14 @@ const openDialog = (type: string, row: RowUserType) => {
 		state.dialog.title = '新增分类';
 		state.dialog.submitTxt = '新 增';
     state.ruleForm.id =0;
-    state.ruleForm.nickname = '';
-    state.ruleForm.username = '';
-    state.ruleForm.avatar = '';
-    state.ruleForm.email = '';
-    state.ruleForm.mobile = '';
-    state.ruleForm.sex = 1;
+    state.ruleForm.title = '';
+    state.ruleForm.alias = '';
+    state.ruleForm.pid = 0;
+    state.ruleForm.level = 1;
     state.ruleForm.status = 1;
-    state.ruleForm.role_ids = [];
+    state.ruleForm.sort = 99;
+    state.ruleForm.icon = '';
     state.ruleForm.describe = '';
-
-		// 清空表单，此项需加表单验证才能使用
-		// nextTick(() => {
-		// 	userDialogFormRef.value.resetFields();
-		// });
 	}
 	state.dialog.isShowDialog = true;
 	getMenuData();
