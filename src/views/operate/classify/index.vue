@@ -2,28 +2,13 @@
 	<div class="system-menu-container layout-pd">
 		<el-card shadow="hover">
       <div class="system-user-search mb15">
-        <el-button size="default" type="success" class="ml10" @click="onOpenAddRole('add',0)">
+        <el-button size="default" type="success" class="ml10" @click="onOpenAddClassify('add',0)">
           <el-icon>
             <ele-FolderAdd />
           </el-icon>
           新增分类
         </el-button>
       </div>
-
-      <template>
-        <el-table :data="tableData" style="width: 100%">
-          <!-- 其他列 -->
-          <el-table-column label="操作" width="100">
-            <template slot-scope="scope">
-              <!-- 这里的iconClass是图标的类名，可以根据实际需求动态绑定 -->
-              <i :class="iconClass" style="margin-right: 5px;"></i>
-              <!-- 其他操作按钮或链接 -->
-            </template>
-          </el-table-column>
-        </el-table>
-      </template>
-
-
 			<el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
         <el-table-column prop="id" label="ID" ></el-table-column>
         <el-table-column prop="title" label="分类名称" ></el-table-column>
@@ -45,14 +30,14 @@
         <el-table-column prop="created_at" label="创建时间"></el-table-column>
         <el-table-column label="操作" width="100">
           <template  #default="scope" >
-            <el-button v-if="scope.row.id !== 1 && scope.row.pid === 1" size="small" text type="primary" @click="onOpenAddRole('add', scope.row.id)">添加子分类</el-button>
-            <el-button v-if="scope.row.id !== 1" size="small" text type="primary" @click="onOpenEditRole('edit', scope.row)">修改</el-button>
-            <el-button v-if="scope.row.id !== 1" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
+            <el-button v-if="scope.row.level < 3" size="small" text type="primary" @click="onOpenAddClassify('add', scope.row.id)">添加子分类</el-button>
+            <el-button size="small" text type="primary" @click="onOpenEditClassify('edit', scope.row)">修改</el-button>
+            <el-button v-if="scope.row.children === null" size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
 			</el-table>
 		</el-card>
-		<RoleDialog ref="roleDialogRef" @refresh="getTableData()" />
+		<ClassifyDialog ref="ClassifyDialogRef" @refresh="getTableData()" />
 	</div>
 </template>
 
@@ -61,42 +46,33 @@ import { defineAsyncComponent, ref, onMounted, reactive } from 'vue';
 import {ElMessage, ElMessageBox} from "element-plus";
 import {useClassify} from "/@/api/classify";
 // 引入组件
-const RoleDialog = defineAsyncComponent(() => import('/src/views/limits/role/dialog.vue'));
-const roleDialogRef = ref();
+const ClassifyDialog = defineAsyncComponent(() => import('/src/views/operate/classify/dialog.vue'));
+const ClassifyDialogRef = ref();
 const state = reactive({
 	tableData: {
     data: [],
     total: 0,
     loading: false,
-    options:[{'id':0,'label':"全部"},{'id':1,'label':"启用"},{'id':2,'label':"禁用"}],
-    param: {
-      title:'',
-      alias:'',
-      status:0,
-      created_at:'',
-      currentPage: 1,
-      pageSize: 10,
-    },
 	},
 });
 // 获取角色数据
 const getTableData = () => {
 	state.tableData.loading = true;
-  useClassify().getClassifyList(state.tableData.param).then((res:any)=>{
+  useClassify().getClassifyAll().then((res:any)=>{
     if (res.code == 200 ) {
-      state.tableData.data =  res.data.data;
+      state.tableData.data =  res.data;
     }
   })
   setTimeout(() => {
     state.tableData.loading = false;
   }, 500);
 };
-const onOpenAddRole = (type: string, pid: number) => {
-  roleDialogRef.value.openDialog(type,pid);
+const onOpenAddClassify = (type: string, pid: number) => {
+  ClassifyDialogRef.value.openDialog(type,pid);
 };
-// 打开修改角色弹窗
-const onOpenEditRole = (type: string, row: Object) => {
-  roleDialogRef.value.openDialog(type, row);
+// 打开修改分类弹窗
+const onOpenEditClassify = (type: string, row: Object) => {
+  ClassifyDialogRef.value.openDialog(type, row);
 };
 
 const OpenStatus = (row:any) =>{
@@ -106,9 +82,9 @@ const OpenStatus = (row:any) =>{
     }
   })
 }
-// 删除角色
-const onRowDel = (row: RowRoleType) => {
-  ElMessageBox.confirm(`此操作将永久删除角色名称：“${row.name}”，是否继续?`, '提示', {
+// 删除
+const onRowDel = (row:any) => {
+  ElMessageBox.confirm(`此操作将永久删除分类：“${row.title}”，是否继续?`, '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning',

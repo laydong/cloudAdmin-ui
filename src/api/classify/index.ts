@@ -15,6 +15,14 @@ export function useClassify() {
 				params,
 			});
 		},
+
+		getClassifyAll: () => {
+			return request({
+				url: '/classify/all',
+				method: 'get',
+			});
+		},
+
 		getClassifyInfo: (params?: object) => {
 			return request({
 				url: '/classify/info',
