@@ -23,6 +23,13 @@ export function useClassify() {
 			});
 		},
 
+		getClassifyLevel: () => {
+			return request({
+				url: '/classify/level',
+				method: 'get',
+			});
+		},
+
 		getClassifyInfo: (params?: object) => {
 			return request({
 				url: '/classify/info',

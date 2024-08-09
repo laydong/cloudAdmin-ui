@@ -10,13 +10,12 @@
         </el-button>
       </div>
 			<el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column prop="id" label="ID" ></el-table-column>
-        <el-table-column prop="title" label="分类名称" ></el-table-column>
-        <el-table-column prop="alias" label="分类别名" ></el-table-column>
+        <el-table-column prop="title" width="120" label="分类名称" ></el-table-column>
+        <el-table-column prop="alias" label="分类别名"></el-table-column>
         <el-table-column prop="level" label="等级" ></el-table-column>
         <el-table-column label="图标" >
           <template #default="scope">
-            <el-avatar shape="square" :size="40" :src="scope.row.icon" />
+            <el-avatar shape="square" :size="20" :src="scope.row.icon" />
           </template>
         </el-table-column>
         <el-table-column prop="sort" label="排序" ></el-table-column>

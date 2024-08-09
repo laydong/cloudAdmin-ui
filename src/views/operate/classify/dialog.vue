@@ -3,52 +3,40 @@
 		<el-dialog :title="state.dialog.title" v-model="state.dialog.isShowDialog" width="769px">
 			<el-form ref="userDialogFormRef" :model="state.ruleForm" size="default" label-width="90px">
 				<el-row :gutter="35">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="mb20">
+            <el-form-item label="上级分类">
+              <el-select v-model="state.ruleForm.pid" placeholder="请选择状态">
+                <el-option
+                    v-for="item in state.levelData"
+                    :key="item.id"
+                    :label="item.title"
+                    :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
 						<el-form-item label="分类名称">
-							<el-input v-model="state.ruleForm.title" placeholder="请输入账户名称" clearable></el-input>
+							<el-input v-model="state.ruleForm.title" placeholder="请输入分类名称" clearable></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
 						<el-form-item label="别名">
-							<el-input v-model="state.ruleForm.alias" placeholder="请输入用户昵称" clearable></el-input>
+							<el-input v-model="state.ruleForm.alias" placeholder="请输入别名" clearable></el-input>
 						</el-form-item>
 					</el-col>
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="mb20">
+          <el-col :xs="12" :sm="18" :md="18" :lg="18" :xl="18" class="mb20">
             <el-form-item label="图标">
               <el-upload class="avatar-uploader" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload"
-              >
+                  :before-upload="beforeAvatarUpload">
                 <img v-if="state.ruleForm.icon" :src="state.ruleForm.icon" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
               </el-upload>
             </el-form-item>
           </el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="手机号">
-							<el-input v-model="state.ruleForm.mobile" placeholder="请输入手机号" clearable></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="邮箱">
-							<el-input v-model="state.ruleForm.email" placeholder="请输入" clearable></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="性别">
-							<el-select v-model="state.ruleForm.sex" placeholder="请选择" clearable class="w100">
-								<el-option label="男" :value=1></el-option>
-								<el-option label="女" :value=2></el-option>
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-						<el-form-item label="账户密码">
-							<el-input v-model="state.ruleForm.password" placeholder="请输入" type="password" clearable></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+					<el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
 						<el-form-item label="状态">
 							<el-switch v-model="state.ruleForm.status" :active-value="1" :inactive-value="2"  inline-prompt active-text="启" inactive-text="禁"></el-switch>
 						</el-form-item>
@@ -72,12 +60,11 @@
 
 <script setup lang="ts" name="systemUserDialog">
 import { reactive, ref } from 'vue';
-import {useRole} from "/@/api/role";
-import {useAdminApi} from "/@/api/admin";
 import {ElMessage} from "element-plus";
-
 import type { UploadProps } from 'element-plus'
 import {useClassify} from "/@/api/classify";
+import jsPlumb from "jsplumb";
+import isArray = jsPlumb.jsPlumbUtil.isArray;
 
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(['refresh']);
@@ -97,7 +84,7 @@ const state = reactive({
     describe: '',
 	},
   roleData:[],
-	deptData: [] as DeptTreeType[], // 部门数据
+	levelData: [] as ClassifTreeType[], // 部门数据
 	dialog: {
 		isShowDialog: false,
 		type: '',
@@ -134,7 +121,7 @@ const openDialog = (type: string, row: RowUserType) => {
     state.ruleForm.describe = '';
 	}
 	state.dialog.isShowDialog = true;
-	getMenuData();
+  getLevelData();
 };
 // 关闭弹窗
 const closeDialog = () => {
@@ -144,71 +131,43 @@ const closeDialog = () => {
 const onCancel = () => {
 	closeDialog();
 };
-// 提交
-const onSubmit = () => {
-	closeDialog();
-	if (state.dialog.type === 'add') {
-    useAdminApi().AdminCreate(state.ruleForm).then((res:any)=>{
-      if (res.code == 200 ) {
-        ElMessage.success(res.msg);
-        emit('refresh');
-      }else {
-        ElMessage.error(res.msg);
-        return
+
+//获取上级分类
+const getLevelData = () =>{
+  useClassify().getClassifyAll().then((res:any)=>{
+    if ( res.code == 200 ) {
+      for (let i = 0; i < res.data.length; i++) {
+
+        console.log(res.data[i].describe);
       }
-    })
-  }else {
-    useAdminApi().AdminUpdate(state.ruleForm).then((res:any)=>{
-      if (res.code == 200 ) {
-        ElMessage.success(res.msg);
-        emit('refresh');
-      }else {
-        ElMessage.error(res.msg);
-        return
-      }
-    })
-  }
-};
-// 初始化部门数据
-const getMenuData = () => {
-  useRole().Available().then((res:any)=>{
-    if (res.code == 200 ) {
-      state.roleData = res.data
+      // for ()
+      state.levelData = res.data
+    }else {
+      ElMessage.error(res.msg);
+      return
     }
   })
-	state.deptData.push({
-		deptName: 'vueNextAdmin',
-		createTime: new Date().toLocaleString(),
-		status: true,
-		sort: Math.random(),
-		describe: '顶级部门',
-		id: Math.random(),
-		children: [
-			{
-				deptName: 'IT外包服务',
-				createTime: new Date().toLocaleString(),
-				status: true,
-				sort: Math.random(),
-				describe: '总部',
-				id: Math.random(),
-			},
-			{
-				deptName: '资本控股',
-				createTime: new Date().toLocaleString(),
-				status: true,
-				sort: Math.random(),
-				describe: '分部',
-				id: Math.random(),
-			},
-		],
-	});
+}
+
+// 提交
+const onSubmit = () => {
+  useClassify().saveClassify(state.ruleForm).then((res:any)=>{
+    if (res.code == 200 ) {
+      closeDialog();
+      ElMessage.success(res.msg);
+      emit('refresh');
+    }else {
+      ElMessage.error(res.msg);
+      return
+    }
+  })
 };
 
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
     response,
     uploadFile
 ) => {
-  state.ruleForm.avatar = URL.createObjectURL(uploadFile.raw!)
+  state.ruleForm.icon = URL.createObjectURL(uploadFile.raw!)
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -231,8 +190,8 @@ defineExpose({
 
 <style scoped>
 .avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
+  width: 100px;
+  height: 100px;
   display: block;
 }
 </style>

@@ -25,7 +25,7 @@
         </el-button>
       </div>
 			<el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%">
-				<el-table-column type="index" label="序号" width="60" />
+				<el-table-column type="index" label="序号" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="username" label="账户名称" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="nickname" label="用户昵称" show-overflow-tooltip></el-table-column>
         <el-table-column prop="sex" label="头像" show-overflow-tooltip>
@@ -93,7 +93,7 @@ const state = reactive({
 		loading: false,
     options:[{'id':0,'label':"全部"},{'id':1,'label':"启用"},{'id':2,'label':"禁用"}],
 		param: {
-      status:0,
+      status:1,
       sex:0,
       nickname:'',
       currentPage: 1,

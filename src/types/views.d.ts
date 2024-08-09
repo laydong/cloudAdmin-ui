@@ -171,6 +171,18 @@ declare type DeptTreeType = {
 	children?: DeptTreeType[];
 };
 
+declare type ClassifTreeType = {
+	id: number;
+	title: string;
+	alias: string;
+	pid: number;
+	level: number;
+	status: number;
+	icon:string;
+	sort:number;
+	describe:string;
+};
+
 // dept
 declare interface RowDeptType extends DeptTreeType {
 	deptLevel: string[];

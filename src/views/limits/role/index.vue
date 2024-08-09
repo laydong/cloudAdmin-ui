@@ -10,7 +10,7 @@
         </el-button>
       </div>
 			<el-table :data="state.tableData.data" v-loading="state.tableData.loading" style="width: 100%" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column prop="name" label="角色名称" ></el-table-column>
+        <el-table-column prop="name" width="180" label="角色名称" ></el-table-column>
         <el-table-column prop="sort" label="排序" ></el-table-column>
         <el-table-column prop="status" label="角色状态">
           <template #default="scope">
